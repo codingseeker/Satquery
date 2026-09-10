@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  X, Sun, Moon, Info, ChevronDown, UserRound, Palette, Gauge,
+  X, Sun, Moon, Info, ChevronDown, UserRound, Gauge,
   Activity, Database, Settings2, Trash2, Check, BarChart3, ShieldCheck,
   KeyRound, Mail, LogOut, Smartphone
 } from 'lucide-react';
@@ -8,7 +8,6 @@ import {
 const NAV = [
   { id: 'general', label: 'General', icon: Settings2 },
   { id: 'account', label: 'Account', icon: UserRound },
-  { id: 'personalization', label: 'Personalization', icon: Palette },
   { id: 'storage', label: 'Storage', icon: Database },
   { id: 'usage', label: 'Usage', icon: Gauge },
   { id: 'activity', label: 'Product activity', icon: Activity },
@@ -128,58 +127,6 @@ function Account({ userEmail }) {
       <button className="danger-btn" onClick={() => { if (window.confirm('Delete this account? This action cannot be undone.')) setDeleted(true); }}><Trash2 size={14} /> Delete</button>
     </div>
   </section>;
-}
-
-function Personalization() {
-  const [baseStyle, setBaseStyle] = useState('default');
-  const [warm, setWarm] = useState('default');
-  const [enthusiastic, setEnthusiastic] = useState('default');
-  const [headers, setHeaders] = useState('default');
-  const [emoji, setEmoji] = useState('default');
-
-  const defaultOptions = [{ value: 'default', label: 'Default' }];
-  const characteristicOptions = [
-    { value: 'more', label: 'More' },
-    { value: 'default', label: 'Default' },
-    { value: 'less', label: 'Less' },
-  ];
-
-  return <>
-    <section className="settings-section personalization-settings">
-      <div className="personalization-row personalization-main-row">
-        <div className="personalization-copy">
-          <div className="personalization-label">Base style and tone</div>
-          <p>Set the style and tone of how SatQuery AI responds to you.</p>
-          <span>This doesn't impact SatQuery AI's capabilities.</span>
-        </div>
-        <SelectRow value={baseStyle} onChange={setBaseStyle} label="Base style and tone" options={defaultOptions} />
-      </div>
-    </section>
-
-    <section className="settings-section personalization-settings">
-      <div className="personalization-characteristics">
-        <div className="personalization-label">Characteristics</div>
-        <p>Choose additional customizations on top of your base style and tone.</p>
-      </div>
-
-      <div className="personalization-option-row">
-        <span>Warm</span>
-        <SelectRow value={warm} onChange={setWarm} label="Warm" options={characteristicOptions} />
-      </div>
-      <div className="personalization-option-row">
-        <span>Enthusiastic</span>
-        <SelectRow value={enthusiastic} onChange={setEnthusiastic} label="Enthusiastic" options={characteristicOptions} />
-      </div>
-      <div className="personalization-option-row">
-        <span>Headers &amp; Lists</span>
-        <SelectRow value={headers} onChange={setHeaders} label="Headers and Lists" options={characteristicOptions} />
-      </div>
-      <div className="personalization-option-row">
-        <span>Emoji</span>
-        <SelectRow value={emoji} onChange={setEmoji} label="Emoji" options={characteristicOptions} />
-      </div>
-    </section>
-  </>;
 }
 
 function Storage() {
@@ -328,7 +275,6 @@ export default function SettingsPanel({ theme, setTheme, accent, setAccent, cont
   const pages = {
     general: <General {...{ theme, setTheme, accent, setAccent, contrast, setContrast }} />,
     account: <Account userEmail={userEmail} />,
-    personalization: <Personalization />,
     storage: <Storage />,
     usage: <Usage />,
     activity: <ProductActivity conversations={conversations} />,
