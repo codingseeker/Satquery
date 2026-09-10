@@ -1,0 +1,71 @@
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python tooling
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# SQLite databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Uploaded user files
+backend/uploads/
+uploads/
+storage/uploads/
+storage/results/
+
+# Frontend / Node
+node_modules/
+dist/
+build/
+.vite/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Temporary files
+*.swp
+*.swo
+*.tmp
+*.temp
+*.bak
+
+# AI model weights (never commit)
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.ckpt
+models/
+model/

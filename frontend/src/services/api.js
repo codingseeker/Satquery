@@ -1,9 +1,3 @@
-/**
- * Base API client.
- * All backend communication goes through this module.
- * Configure the base URL via VITE_API_BASE_URL environment variable.
- */
-
 import config from '../config/env';
 
 class APIError extends Error {
@@ -15,20 +9,16 @@ class APIError extends Error {
   }
 }
 
+function getToken() {
+  return localStorage.getItem('satquery_token');
+}
+
 class APIClient {
   constructor() {
     this.baseUrl = config.apiBaseUrl;
     this.timeoutMs = config.requestTimeoutMs;
   }
 
-  /**
-   * Core request method.
-   * @param {string} method
-   * @param {string} path
-   * @param {object|null} body
-   * @param {object} extraHeaders
-   * @returns {Promise<any>}
-   */
   async request(method, path, body = null, extraHeaders = {}) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this.timeoutMs);
@@ -37,6 +27,11 @@ class APIClient {
       'Content-Type': 'application/json',
       ...extraHeaders,
     };
+
+    const token = getToken();
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
 
     const options = {
       method,
@@ -59,7 +54,6 @@ class APIClient {
         throw new APIError(message, response.status, errorData);
       }
 
-      // Handle empty responses
       const contentType = response.headers.get('content-type') || '';
       if (contentType.includes('application/json')) {
         return response.json();
@@ -91,20 +85,21 @@ class APIClient {
     return this.request('DELETE', path, null, headers);
   }
 
-  /**
-   * Upload file(s) as multipart/form-data.
-   * @param {string} path
-   * @param {FormData} formData
-   * @returns {Promise<any>}
-   */
   async postFormData(path, formData) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this.timeoutMs);
 
+    const headers = {};
+    const token = getToken();
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     try {
       const response = await fetch(`${this.baseUrl}${path}`, {
         method: 'POST',
-        body: formData, // browser sets Content-Type with boundary automatically
+        body: formData,
+        headers,
         signal: controller.signal,
       });
       clearTimeout(timeoutId);
@@ -127,10 +122,6 @@ class APIClient {
     }
   }
 
-  /**
-   * Check API health. Returns true if the backend is reachable.
-   * @returns {Promise<boolean>}
-   */
   async ping() {
     try {
       await this.get('/health');
