@@ -750,7 +750,7 @@ def main():
             quantization_config=quantization_config,
             device_map="auto",
             torch_dtype=torch.float16,
-            attn_implementation="eager",
+            attn_implementation="sdpa",
             local_files_only=True,
         )
     )
