@@ -23,9 +23,9 @@ training/outputs/checkpoints/
 # Allow the evaluation results JSON
 !training/outputs/satquery_evaluation.json
 
-# Trained model weights — too large for GitHub (use HuggingFace Hub instead)
-# Allow .gitkeep placeholder
+# Trained model weights
 training/models/*
+!training/models/satquery-best-lora/
 !training/models/.gitkeep
 
 
