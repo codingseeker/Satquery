@@ -1,0 +1,252 @@
+{
+  "base_model": "training/models/qwen25vl",
+  "adapter": "training/models/satquery-best-lora",
+  "development_file": "training/data/processed/dev.jsonl",
+  "development_examples": 20,
+  "exact_matches": 8,
+  "exact_match_rate": 0.4,
+  "task_statistics": {
+    "binary": {
+      "total": 10,
+      "exact_matches": 6,
+      "exact_match_rate": 0.6
+    },
+    "captioning": {
+      "total": 3,
+      "exact_matches": 1,
+      "exact_match_rate": 0.3333333333333333
+    },
+    "bounding box": {
+      "total": 4,
+      "exact_matches": 0,
+      "exact_match_rate": 0.0
+    },
+    "mcq": {
+      "total": 3,
+      "exact_matches": 1,
+      "exact_match_rate": 0.3333333333333333
+    }
+  },
+  "results": [
+    {
+      "id": "765560",
+      "task": "binary",
+      "category": "presence",
+      "image": "training/data/images/extracted/s2/S2A_MSIL2A_20170720T100031_N9999_R122_T34UDG_85_16.png",
+      "question": "Remote-sensing task: binary\n\nCan you detect any marine waters in the image?",
+      "expected": "yes",
+      "prediction": "no",
+      "exact_match": false,
+      "error": null
+    },
+    {
+      "id": "4167729",
+      "task": "captioning",
+      "category": "None",
+      "image": "training/data/images/extracted/s2/S2B_MSIL2A_20170808T094029_N9999_R036_T35ULA_09_20.png",
+      "question": "Remote-sensing task: captioning\n\nGive a detailed overview of the image content, including the geographic location and land cover features.",
+      "expected": "This satellite image, captured during the summer in Lithuania, showcases a predominantly agricultural landscape within the \"cold, no dry season, warm summer\" climate zone. The largest area is arable land, spanning approximately 1,044,000 square meters. Interspersed among the agricultural areas are smaller patches of complex cultivation patterns, covering around 270,000 square meters, which are distributed across two areas, one of which is a smaller area of about 258,000 square meters and the other is marginal, covering 72,000 square meters or less. Additionally, a small mixed forest, approximately 78,000 square meters in size, is present. The landscape is also dotted with marginal areas of urban fabric and coniferous forest, each covering less than 5% or 72,000 square meters of the total area. The arable land borders with complex cultivation patterns, mixed forest, and urban fabric. Furthermore, the mixed forest is adjacent to the coniferous forest, indicating a transition between these seminatural and artificial features.",
+      "prediction": "This satellite image, captured during the summer in Lithuania, showcases a predominantly agricultural landscape within the \"cold, no dry season, warm summer\" climate zone. The dominant feature is arable land, spanning approximately 1,290,000 square meters, which borders complex cultivation patterns (~483,000 sqm), mixed forest (~456,000 sqm), and pastures (~375,000 sqm). The complex cultivation patterns, which are distributed over two areas (~272,000 sqm and ~211,000 sq",
+      "exact_match": false,
+      "error": null
+    },
+    {
+      "id": "4190224",
+      "task": "binary",
+      "category": "presence",
+      "image": "training/data/images/extracted/s2/S2B_MSIL2A_20170808T094029_N9999_R036_T35ULA_19_81.png",
+      "question": "Remote-sensing task: binary\n\nDo parts of the image correspond to agro-forestry areas?",
+      "expected": "no",
+      "prediction": "no",
+      "exact_match": true,
+      "error": null
+    },
+    {
+      "id": "4277084",
+      "task": "bounding box",
+      "category": "reference",
+      "image": "training/data/images/extracted/s2/S2B_MSIL2A_20170808T094029_N9999_R036_T35ULA_64_06.png",
+      "question": "Remote-sensing task: bounding box\n\nWhere can the <ref>smallest contiguous region of complex cultivation patterns</ref> be found?",
+      "expected": "[0.0 0.3, 0.1 0.53]",
+      "prediction": "[0.0 0.0, 0.5 0.5]",
+      "exact_match": false,
+      "error": null
+    },
+    {
+      "id": "4300961",
+      "task": "binary",
+      "category": "count",
+      "image": "training/data/images/extracted/s2/S2B_MSIL2A_20170808T094029_N9999_R036_T35ULA_80_51.png",
+      "question": "Remote-sensing task: binary\n\nDo arable lands appear in four or more connected regions here?",
+      "expected": "no",
+      "prediction": "no",
+      "exact_match": true,
+      "error": null
+    },
+    {
+      "id": "4311515",
+      "task": "captioning",
+      "category": "None",
+      "image": "training/data/images/extracted/s2/S2B_MSIL2A_20170808T094029_N9999_R036_T35ULA_88_23.png",
+      "question": "Remote-sensing task: captioning\n\nProvide a summary of the scene, including geographic information, season, and land cover classes.",
+      "expected": "This satellite image, captured during the summer in Lithuania, showcases a predominantly forested landscape within the \"cold, no dry season, warm summer\" climate zone. The dominant feature is the expansive broad-leaved forest, covering approximately 1,167,000 square meters. A smaller but notable area is occupied by mixed forest, spanning around 222,000 square meters, which is distributed across three individual areas, including one larger section (~179,000 sqm) and two marginal areas (~43,000 sqm each, combined 43'000 sqm). The broad-leaved forest shares borders with both the mixed forest and coniferous forest, which covers less than 5% (72,000 sqm) of the total area and is spread over two individual marginal areas. Additionally, the mixed forest is adjacent to the coniferous forest. The coniferous forest is also next to a small patch of complex cultivation patterns, which also covers less than 5% (72,000 sqm) of the total area. This landscape highlights a diverse mix of forest and seminatural areas, with a minor presence of agricultural areas, set within the specified climate zone.",
+      "prediction": "This satellite image, captured during the summer in Lithuania, showcases a predominantly forested landscape within the \"cold, no dry season, warm summer\" climate zone. The dominant feature is the expansive mixed forest, covering approximately 1,296,000 square meters. It is bordered by a smaller area of pastures (~340,000 sqm) and a marginal patch of complex cultivation patterns (~72,000 sqm). The mixed forest shares a border with the pastures, which are distributed over two individual areas, one being a smaller area (~220,000 sq",
+      "exact_match": false,
+      "error": null
+    },
+    {
+      "id": "4209335",
+      "task": "mcq",
+      "category": "presence",
+      "image": "training/data/images/extracted/s2/S2B_MSIL2A_20170808T094029_N9999_R036_T35ULA_29_02.png",
+      "question": "Remote-sensing task: mcq\n\nWhich class is visible in the scene? a) Beaches, dunes, sands, b) Coniferous forest, c) Broad-leaved forest, d) Transitional woodland, shrub",
+      "expected": "b",
+      "prediction": "c",
+      "exact_match": false,
+      "error": null
+    },
+    {
+      "id": "4172646",
+      "task": "binary",
+      "category": "presence",
+      "image": "training/data/images/extracted/s2/S2B_MSIL2A_20170808T094029_N9999_R036_T35ULA_11_61.png",
+      "question": "Remote-sensing task: binary\n\nDoes the satellite image display pastures?",
+      "expected": "yes",
+      "prediction": "yes",
+      "exact_match": true,
+      "error": null
+    },
+    {
+      "id": "4248852",
+      "task": "binary",
+      "category": "area",
+      "image": "training/data/images/extracted/s2/S2B_MSIL2A_20170808T094029_N9999_R036_T35ULA_48_09.png",
+      "question": "Remote-sensing task: binary\n\nDo mixed forests cover at least 0 m2 of the image?",
+      "expected": "yes",
+      "prediction": "yes",
+      "exact_match": true,
+      "error": null
+    },
+    {
+      "id": "761234",
+      "task": "captioning",
+      "category": "None",
+      "image": "training/data/images/extracted/s2/S2A_MSIL2A_20170720T100031_N9999_R122_T34UDG_80_33.png",
+      "question": "Remote-sensing task: captioning\n\nExplain the distribution of land cover in this image, including the geographic region and season.",
+      "expected": "This satellite image, captured during the summer season in Lithuania, showcases a landscape fully covered by marine waters, spanning approximately 1,440,000 square meters, within the \"cold, no dry season, warm summer\" climate zone.",
+      "prediction": "This satellite image, captured during the summer season in Lithuania, showcases a landscape fully covered by marine waters, spanning approximately 1,440,000 square meters, within the \"cold, no dry season, warm summer\" climate zone.",
+      "exact_match": true,
+      "error": null
+    },
+    {
+      "id": "4310569",
+      "task": "binary",
+      "category": "count",
+      "image": "training/data/images/extracted/s2/S2B_MSIL2A_20170808T094029_N9999_R036_T35ULA_87_53.png",
+      "question": "Remote-sensing task: binary\n\nIs there only one continuous patch of complex cultivation patterns in the image?",
+      "expected": "no",
+      "prediction": "no",
+      "exact_match": true,
+      "error": null
+    },
+    {
+      "id": "763156",
+      "task": "binary",
+      "category": "presence",
+      "image": "training/data/images/extracted/s2/S2A_MSIL2A_20170720T100031_N9999_R122_T34UDG_82_42.png",
+      "question": "Remote-sensing task: binary\n\nDoes the image depict marine waters?",
+      "expected": "yes",
+      "prediction": "no",
+      "exact_match": false,
+      "error": null
+    },
+    {
+      "id": "759457",
+      "task": "mcq",
+      "category": "area",
+      "image": "training/data/images/extracted/s2/S2A_MSIL2A_20170720T100031_N9999_R122_T34UDG_78_30.png",
+      "question": "Remote-sensing task: mcq\n\nSelect the area of marine waters: a) 1152000 to 1440000 square meters, b) 864000 to 1008000 square meters, c) 288000 to 720000 square meters, d) 1008000 to 1152000 square meters",
+      "expected": "a",
+      "prediction": "c",
+      "exact_match": false,
+      "error": null
+    },
+    {
+      "id": "4244911",
+      "task": "binary",
+      "category": "presence",
+      "image": "training/data/images/extracted/s2/S2B_MSIL2A_20170808T094029_N9999_R036_T35ULA_46_08.png",
+      "question": "Remote-sensing task: binary\n\nDoes the satellite view capture agro-forestry areas?",
+      "expected": "no",
+      "prediction": "no",
+      "exact_match": true,
+      "error": null
+    },
+    {
+      "id": "4171904",
+      "task": "binary",
+      "category": "adjacency",
+      "image": "training/data/images/extracted/s2/S2B_MSIL2A_20170808T094029_N9999_R036_T35ULA_11_29.png",
+      "question": "Remote-sensing task: binary\n\nIs any arable land situated directly next to a coniferous forest?",
+      "expected": "no",
+      "prediction": "yes",
+      "exact_match": false,
+      "error": null
+    },
+    {
+      "id": "757469",
+      "task": "mcq",
+      "category": "area",
+      "image": "training/data/images/extracted/s2/S2A_MSIL2A_20170720T100031_N9999_R122_T34UDG_76_11.png",
+      "question": "Remote-sensing task: mcq\n\nSelect the area covered by marine waters: a) 144000 to 288000 sqm, b) 720000 to 864000 sqm, c) 864000 to 1440000 sqm, d) 288000 to 720000 sqm",
+      "expected": "c",
+      "prediction": "c",
+      "exact_match": true,
+      "error": null
+    },
+    {
+      "id": "4151686",
+      "task": "bounding box",
+      "category": "point",
+      "image": "training/data/images/extracted/s2/S2B_MSIL2A_20170808T094029_N9999_R036_T35ULA_00_23.png",
+      "question": "Remote-sensing task: bounding box\n\nOutput a bounding box enclosing the land cover class instance found at <point>(0.34, 0.11)</point> in the satellite image.",
+      "expected": "[0.0 0.0, 0.78 0.27]",
+      "prediction": "[0.0 0.0, 0.6 0.3]",
+      "exact_match": false,
+      "error": null
+    },
+    {
+      "id": "4194749",
+      "task": "bounding box",
+      "category": "point",
+      "image": "training/data/images/extracted/s2/S2B_MSIL2A_20170808T094029_N9999_R036_T35ULA_22_05.png",
+      "question": "Remote-sensing task: bounding box\n\nGenerate a bounding box around the land cover class instance at <point>(0.18, 0.81)</point> in the satellite image.",
+      "expected": "[0.0 0.55, 0.36 1.0]",
+      "prediction": "[0.0 0.65, 0.3 1.0]",
+      "exact_match": false,
+      "error": null
+    },
+    {
+      "id": "4223382",
+      "task": "binary",
+      "category": "count",
+      "image": "training/data/images/extracted/s2/S2B_MSIL2A_20170808T094029_N9999_R036_T35ULA_35_86.png",
+      "question": "Remote-sensing task: binary\n\nAre lands principally occupied by agriculture with significant areas of natural vegetation separated across one or more continuous areas in the image?",
+      "expected": "yes",
+      "prediction": "no",
+      "exact_match": false,
+      "error": null
+    },
+    {
+      "id": "4198965",
+      "task": "bounding box",
+      "category": "point",
+      "image": "training/data/images/extracted/s2/S2B_MSIL2A_20170808T094029_N9999_R036_T35ULA_24_05.png",
+      "question": "Remote-sensing task: bounding box\n\nOutput a bounding box surrounding the land cover class instance positioned at <point>(0.79, 0.85)</point> in the image.",
+      "expected": "[0.47 0.52, 1.0 1.0]",
+      "prediction": "[0.61 0.63, 1.0 1.0]",
+      "exact_match": false,
+      "error": null
+    }
+  ]
+}

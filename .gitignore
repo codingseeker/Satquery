@@ -16,11 +16,18 @@ training/data/metadata/
 training/data/processed/
 training/data/raw/
 
-# Trained model weights — too large for GitHub (use HuggingFace Hub instead)
-training/models/
+# Training logs and outputs — allow evaluation results, ignore large checkpoints
+training/outputs/logs/
+training/outputs/checkpoints/
 
-# Training logs and outputs
-training/outputs/
+# Allow the evaluation results JSON
+!training/outputs/satquery_evaluation.json
+
+# Trained model weights — too large for GitHub (use HuggingFace Hub instead)
+# Allow .gitkeep placeholder
+training/models/*
+!training/models/.gitkeep
+
 
 # OS files
 .DS_Store

@@ -259,6 +259,8 @@ def build_training_example(
         add_generation_prompt=True,
     )
 
+
+
     # --------------------------------------------------------
     # Visual inputs
     #
