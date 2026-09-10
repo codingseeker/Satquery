@@ -69,3 +69,42 @@ Thumbs.db
 *.ckpt
 models/
 model/
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Large data files — never commit these
+training/data/images/
+training/data/metadata/
+training/data/processed/
+training/data/raw/
+
+# Training logs and outputs — allow evaluation results, ignore large checkpoints
+training/outputs/logs/
+training/outputs/checkpoints/
+
+# Allow the evaluation results JSON
+!training/outputs/satquery_evaluation.json
+
+# Trained model weights
+training/models/*
+!training/models/satquery-best-lora/
+!training/models/.gitkeep
+
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
