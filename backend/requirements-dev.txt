@@ -1,0 +1,8 @@
+# Development / diagnostic-only tooling. NOT installed in the production
+# image (see backend/Dockerfile, which installs requirements.txt only).
+# Used for local load/performance testing against a running backend.
+#
+#   pip install -r requirements-dev.txt
+
+-r requirements.txt
+locust>=2.32.0
