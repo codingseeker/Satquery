@@ -42,9 +42,9 @@ function RecenterButton() {
  * Supports: zoom, pan, fullscreen, region overlays, layer visibility, map view, layer panel.
  * Regions and changes are passed from the parent (AnalysisResult) — never invented here.
  *
- * @param {{ file: UploadedFile, regions: Region[], changes: Change[] }} props
+ * @param {{ file: UploadedFile, regions: Region[], changes: Change[], activeRegionId?: string }} props
  */
-export default function SatelliteViewer({ file, regions = [], changes = [], mapData = {}, metadata = {} }) {
+export default function SatelliteViewer({ file, regions = [], changes = [], mapData = {}, metadata = {}, activeRegionId = null }) {
   const [tab, setTab] = useState('image');
   const [zoom, setZoom] = useState(1);
   const [showRegions, setShowRegions] = useState(true);
@@ -149,19 +149,35 @@ export default function SatelliteViewer({ file, regions = [], changes = [], mapD
               ))}
 
               {/* Change overlays */}
-              {showChanges && hasChanges && changes.filter(c => c.bounds).map(c => (
+              {showChanges && hasChanges && changes.map(c => (
                 <div
                   key={c.id}
-                  className={`viewer-change viewer-change-${c.type}`}
+                  className={`viewer-change viewer-change-${c.type} ${activeRegionId === c.id ? 'active' : ''}`}
                   style={{
+                    position: 'absolute',
                     left: `${c.bounds.x}%`,
                     top: `${c.bounds.y}%`,
                     width: `${c.bounds.w}%`,
                     height: `${c.bounds.h}%`,
+                    border: activeRegionId === c.id ? '2px solid #ef4444' : (c.type === 'added' ? '2px solid #10b981' : '2px solid #f59e0b'),
+                    backgroundColor: activeRegionId === c.id ? 'rgba(239, 68, 68, 0.2)' : 'transparent',
+                    boxShadow: activeRegionId === c.id ? '0 0 0 2px white, 0 0 10px rgba(239,68,68,0.5)' : 'none',
+                    zIndex: activeRegionId === c.id ? 10 : 1
                   }}
                   title={c.label}
                 >
-                  <span className="viewer-region-label">{c.label}</span>
+                  <span className="viewer-region-label" style={{
+                     background: activeRegionId === c.id ? '#ef4444' : (c.type === 'added' ? '#10b981' : '#f59e0b'),
+                     color: '#fff', 
+                     fontSize: '10px', 
+                     padding: '2px 4px', 
+                     position: 'absolute', 
+                     top: '-18px', 
+                     left: '-2px',
+                     whiteSpace: 'nowrap'
+                  }}>
+                    {c.label}
+                  </span>
                 </div>
               ))}
             </div>
@@ -246,22 +262,33 @@ export default function SatelliteViewer({ file, regions = [], changes = [], mapD
               ) : null}
 
               {/* Region overlays */}
-              {hasRegions && regions.map(r => (
+              {showRegions && hasRegions && regions.map(r => (
                 <div
                   key={r.id}
-                  className="viewer-region"
+                  className={`viewer-region ${activeRegionId === r.id ? 'active' : ''}`}
                   style={{
                     position: 'absolute',
                     left: `${r.bounds.x}%`,
                     top: `${r.bounds.y}%`,
                     width: `${r.bounds.w}%`,
                     height: `${r.bounds.h}%`,
-                    border: '2px solid #3b82f6',
-                    backgroundColor: 'rgba(59, 130, 246, 0.2)'
+                    border: activeRegionId === r.id ? '2px solid #ef4444' : '2px solid #3b82f6',
+                    backgroundColor: activeRegionId === r.id ? 'rgba(239, 68, 68, 0.2)' : 'rgba(59, 130, 246, 0.1)',
+                    boxShadow: activeRegionId === r.id ? '0 0 0 2px white, 0 0 10px rgba(239,68,68,0.5)' : 'none',
+                    zIndex: activeRegionId === r.id ? 10 : 1
                   }}
                   title={r.label}
                 >
-                  <span className="viewer-region-label" style={{ background: '#3b82f6', color: '#fff', fontSize: '10px', padding: '2px 4px', position: 'absolute', top: '-18px', left: '-2px' }}>
+                  <span className="viewer-region-label" style={{ 
+                    background: activeRegionId === r.id ? '#ef4444' : '#3b82f6', 
+                    color: '#fff', 
+                    fontSize: '10px', 
+                    padding: '2px 4px', 
+                    position: 'absolute', 
+                    top: '-18px', 
+                    left: '-2px',
+                    whiteSpace: 'nowrap'
+                  }}>
                     {r.label}
                   </span>
                 </div>

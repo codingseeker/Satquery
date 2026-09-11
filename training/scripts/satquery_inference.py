@@ -9,17 +9,29 @@ class SatQueryBot:
         print("Loading Processor...")
         self.processor = AutoProcessor.from_pretrained(base_model_id)
         
-        print("Loading Base Model in 4-bit...")
-        quant_config = BitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_quant_type="nf4",
-            bnb_4bit_compute_dtype=torch.float16
-        )
-        base_model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
-            base_model_id,
-            quantization_config=quant_config,
-            device_map="auto"
-        )
+        print("Loading Base Model...")
+        try:
+            # Attempt to load with 4-bit quantization (GPU preferred)
+            quant_config = BitsAndBytesConfig(
+                load_in_4bit=True,
+                bnb_4bit_quant_type="nf4",
+                bnb_4bit_compute_dtype=torch.float16
+            )
+            base_model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+                base_model_id,
+                quantization_config=quant_config,
+                device_map="auto"
+            )
+            print("Successfully loaded in 4-bit precision.")
+        except Exception as e:
+            print(f"4-bit quantization failed (e.g. no GPU). Falling back to CPU/standard precision: {e}")
+            # Fallback to standard loading with CPU offloading or default device
+            base_model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+                base_model_id,
+                torch_dtype=torch.float32 if not torch.cuda.is_available() else torch.float16,
+                device_map="auto"
+            )
+            print("Successfully loaded with standard precision fallback.")
         
         print(f"Applying SatQuery LoRA from {adapter_path}...")
         self.model = PeftModel.from_pretrained(base_model, adapter_path)
