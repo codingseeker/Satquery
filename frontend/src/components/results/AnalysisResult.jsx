@@ -6,12 +6,18 @@ import SatelliteViewer from '../../SatelliteViewer';
 
 export default function AnalysisResult({ analysis, uploadedFiles }) {
   const [showViewer, setShowViewer] = useState(false);
+  const [activeRegionId, setActiveRegionId] = useState(null);
 
   if (!analysis) return null;
 
   const { answer, taskLabel, confidence, regions, changes, execution } = analysis;
   const primaryFile = uploadedFiles?.[0];
   const hasVisualOutput = regions?.length > 0 || changes?.length > 0;
+
+  const handleRegionClick = (id) => {
+    setActiveRegionId(id === activeRegionId ? null : id);
+    if (!showViewer) setShowViewer(true);
+  };
 
   return (
     <div className="analysis-result-wrap">
@@ -29,7 +35,7 @@ export default function AnalysisResult({ analysis, uploadedFiles }) {
             {showViewer ? <EyeOff size={14} /> : <Eye size={14} />}
             {showViewer ? 'Hide image viewer' : 'Show image viewer'}
           </button>
-          {showViewer && <SatelliteViewer file={primaryFile} regions={regions} changes={changes} />}
+          {showViewer && <SatelliteViewer file={primaryFile} regions={regions} changes={changes} activeRegionId={activeRegionId} />}
         </div>
       )}
 
@@ -39,7 +45,12 @@ export default function AnalysisResult({ analysis, uploadedFiles }) {
             <div className="result-regions">
               <div className="result-regions-title">Detected regions</div>
               {regions.map(r => (
-                <div key={r.id} className="result-region-item">
+                <div 
+                  key={r.id} 
+                  className={`result-region-item ${activeRegionId === r.id ? 'active' : ''}`}
+                  onClick={() => handleRegionClick(r.id)}
+                  style={{ cursor: 'pointer', background: activeRegionId === r.id ? 'var(--hover)' : 'transparent', padding: '4px', borderRadius: '4px' }}
+                >
                   <span className="region-dot" />
                   <span>{r.label}</span>
                 </div>
@@ -50,7 +61,12 @@ export default function AnalysisResult({ analysis, uploadedFiles }) {
             <div className="result-changes">
               <div className="result-regions-title">Detected changes</div>
               {changes.map(c => (
-                <div key={c.id} className={`result-change-item change-${c.type}`}>
+                <div 
+                  key={c.id} 
+                  className={`result-change-item change-${c.type} ${activeRegionId === c.id ? 'active' : ''}`}
+                  onClick={() => handleRegionClick(c.id)}
+                  style={{ cursor: 'pointer', background: activeRegionId === c.id ? 'var(--hover)' : 'transparent', padding: '4px', borderRadius: '4px' }}
+                >
                   <span className={`change-dot ${c.type}`} />
                   <span>{c.label}</span>
                   <span className="change-type-badge">{c.type}</span>

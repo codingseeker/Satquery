@@ -49,3 +49,17 @@ The system uses the \Qwen2.5-VL-3B-Instruct\ base model fine-tuned on the BigEar
 - The training scripts and data preparation routines are located in \	raining/scripts/\.
 - The locally trained adapter (\satquery-best-lora\) successfully handles complex spatial distributions, identifies coastlines, vegetation, water bodies, and handles conversational multi-turn AI interactions cleanly.
 - The \AI_MODE\ in \ackend/ai_service/real_service.py\ has been fully wired up. The AI automatically detects markdown, structures plain text for the frontend UI, and parses Qwen \<box>\ tags into visual bounding boxes!
+
+## Evaluation Metrics (SatQuery LoRA vs Base)
+
+Based on our validation dataset (	raining/outputs/satquery_evaluation.json), the SatQuery LoRA adapter achieves the following accuracy scores against the remote sensing benchmark:
+
+| Task Type | Total Examples | Exact Match Rate |
+| --- | --- | --- |
+| **Binary Classification** | 10 | 60.0% |
+| **VQA / Captioning** | 3 | 33.3% |
+| **Multiple Choice** | 3 | 33.3% |
+| **Overall Accuracy** | 20 | **40.0%** |
+
+*Note: The model runs locally in 4-bit precision via BitsAndBytes, ensuring fast inference while preserving remote sensing intelligence.*
+
