@@ -23,6 +23,37 @@ def validate_upload(file: UploadFile) -> Tuple[str, str]:
     return original, ext
 
 
+def stream_to_file_with_limit(file: UploadFile, dest: str) -> int:
+    """Synchronously stream an UploadFile to disk, enforcing MAX_FILE_SIZE. Returns bytes written."""
+    import shutil
+    size = 0
+    chunk_size = 1024 * 1024  # 1MB
+    try:
+        with open(dest, "wb") as out:
+            while True:
+                chunk = file.file.read(chunk_size)
+                if not chunk:
+                    break
+                size += len(chunk)
+                if size > MAX_FILE_SIZE:
+                    out.close()
+                    if os.path.exists(dest):
+                        os.remove(dest)
+                    raise HTTPException(
+                        status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                        detail=f"File exceeds maximum size of {settings.MAX_UPLOAD_SIZE_MB}MB",
+                    )
+                out.write(chunk)
+    except HTTPException:
+        raise
+    except Exception as e:
+        if os.path.exists(dest):
+            os.remove(dest)
+        raise HTTPException(status_code=500, detail=f"Failed to save file: {e}")
+    return size
+
+
+
 async def save_upload(file: UploadFile, user: User, analysis_id: int, ext: str) -> str:
     user_dir = os.path.join(settings.UPLOAD_DIR, str(user.id))
     os.makedirs(user_dir, exist_ok=True)
