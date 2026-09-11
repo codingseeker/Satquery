@@ -53,8 +53,7 @@ class APIClient {
         if (response.status === 401) {
           localStorage.removeItem('satquery_token');
           localStorage.removeItem('satquery_email');
-          window.location.reload();
-          // Stall to prevent UI from rendering error banner while reloading
+          window.dispatchEvent(new Event('satquery:logout'));
           return new Promise(() => {});
         }
         const message = errorData?.detail || errorData?.message || `Request failed with status ${response.status}`;
@@ -117,7 +116,7 @@ class APIClient {
         if (response.status === 401) {
           localStorage.removeItem('satquery_token');
           localStorage.removeItem('satquery_email');
-          window.location.reload();
+          window.dispatchEvent(new Event('satquery:logout'));
           return new Promise(() => {});
         }
         const message = errorData?.detail || errorData?.message || `Upload failed with status ${response.status}`;
