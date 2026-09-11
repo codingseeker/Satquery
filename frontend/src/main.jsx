@@ -376,7 +376,7 @@ function App() {
         if (result?.image_id) imageIds.push(result.image_id);
       }
 
-      const queryConvId = backendConvId || convId;
+      const queryConvId = String(backendConvId || convId);
       const analysis = await sendQuery({
         conversationId: queryConvId,
         query: content,
