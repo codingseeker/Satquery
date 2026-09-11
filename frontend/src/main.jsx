@@ -214,6 +214,12 @@ function App() {
     setWelcomeFiles([]);
   }
 
+  // Listen for 401 events from api.js and trigger logout
+  React.useEffect(() => {
+    window.addEventListener('satquery:logout', logout);
+    return () => window.removeEventListener('satquery:logout', logout);
+  }, []);
+
   // ── Conversation management ───────────────────────────────────────────────
   const activeConv = conversations.find(c => c.id === activeConvId) || null;
 
