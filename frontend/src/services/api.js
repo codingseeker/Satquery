@@ -50,6 +50,11 @@ class APIClient {
       if (!response.ok) {
         let errorData = null;
         try { errorData = await response.json(); } catch (_) { /* ignore */ }
+        if (response.status === 401) {
+          localStorage.removeItem('satquery_token');
+          localStorage.removeItem('satquery_email');
+          window.location.reload();
+        }
         const message = errorData?.detail || errorData?.message || `Request failed with status ${response.status}`;
         throw new APIError(message, response.status, errorData);
       }
@@ -107,6 +112,11 @@ class APIClient {
       if (!response.ok) {
         let errorData = null;
         try { errorData = await response.json(); } catch (_) { /* ignore */ }
+        if (response.status === 401) {
+          localStorage.removeItem('satquery_token');
+          localStorage.removeItem('satquery_email');
+          window.location.reload();
+        }
         const message = errorData?.detail || errorData?.message || `Upload failed with status ${response.status}`;
         throw new APIError(message, response.status, errorData);
       }
