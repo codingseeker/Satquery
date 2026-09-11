@@ -43,6 +43,38 @@ async def upload_image(
     with open(dest, "wb") as out:
         out.write(content)
 
+    # Convert GeoTIFF to viewable PNG for the frontend
+    if ext in ["tif", "tiff"]:
+        try:
+            import rasterio
+            from PIL import Image as PILImage
+            import numpy as np
+            with rasterio.open(dest) as src:
+                # Read first 3 bands (or 1 if single band)
+                count = min(3, src.count)
+                bands = [src.read(i) for i in range(1, count + 1)]
+                if count == 1:
+                    arr = bands[0]
+                    # Normalize to 0-255
+                    arr = ((arr - np.nanmin(arr)) / (np.nanmax(arr) - np.nanmin(arr) + 1e-8) * 255).astype(np.uint8)
+                    pil_img = PILImage.fromarray(arr).convert("RGB")
+                else:
+                    arrs = []
+                    for b in bands:
+                        b_norm = ((b - np.nanmin(b)) / (np.nanmax(b) - np.nanmin(b) + 1e-8) * 255).astype(np.uint8)
+                        arrs.append(b_norm)
+                    if count == 2:
+                        arrs.append(np.zeros_like(arrs[0]))
+                    rgb = np.dstack(arrs)
+                    pil_img = PILImage.fromarray(rgb)
+                
+                png_name = stored_name + ".png"
+                pil_img.save(os.path.join(user_dir, png_name))
+                # Update stored name so frontend loads the PNG
+                stored_name = png_name
+        except Exception as e:
+            print(f"Failed to convert TIFF: {e}")
+
     image = Image(
         user_id=user.id,
         original_filename=original,
