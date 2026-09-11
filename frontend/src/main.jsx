@@ -214,10 +214,37 @@ function App() {
     setWelcomeFiles([]);
   }
 
-  // Listen for 401 events from api.js and trigger logout
+  // On mount: validate the stored token against the backend immediately.
+  // If it's expired or invalid, clear state and show login right away.
   React.useEffect(() => {
-    window.addEventListener('satquery:logout', logout);
-    return () => window.removeEventListener('satquery:logout', logout);
+    const token = localStorage.getItem('satquery_token');
+    if (!token) return;
+    const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+    fetch(`${apiBase}/api/conversations`, {
+      headers: { Authorization: `Bearer ${token}` },
+    }).then(res => {
+      if (res.status === 401) {
+        localStorage.removeItem('satquery_token');
+        localStorage.removeItem('satquery_email');
+        setAuthenticated(false);
+        setUserEmail('');
+      }
+    }).catch(() => { /* network error - keep authenticated state, user will see errors inline */ });
+  }, []);
+
+  // Listen for 401 events dispatched by api.js during normal usage
+  React.useEffect(() => {
+    function handleLogout() {
+      localStorage.removeItem('satquery_token');
+      localStorage.removeItem('satquery_email');
+      setAuthenticated(false);
+      setUserEmail('');
+      setConversations([]);
+      setActiveConvId(null);
+      setWelcomeFiles([]);
+    }
+    window.addEventListener('satquery:logout', handleLogout);
+    return () => window.removeEventListener('satquery:logout', handleLogout);
   }, []);
 
   // ── Conversation management ───────────────────────────────────────────────
