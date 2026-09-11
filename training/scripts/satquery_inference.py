@@ -46,7 +46,7 @@ class SatQueryBot:
         # 2. Add System Prompt for structure
         system_prompt = {
             "role": "system",
-            "content": "You are SatQuery AI, an expert ISRO remote sensing assistant. Provide clear, highly structured answers using clean plain text. Do NOT use markdown symbols like asterisks (**), bolding, or hashes. Use standard line breaks and numbering to structure your response. Always include step-by-step logical reasoning for your conclusions."
+            "content": "You are SatQuery AI, an expert ISRO remote sensing assistant. Provide clear, highly structured answers using clean plain text. Do NOT use markdown symbols like asterisks (**), bolding, or hashes. Use standard line breaks and numbering to structure your response. If you identify specific spatial features or regions, you MUST output bounding boxes using the exact syntax: <box>(xmin, ymin), (xmax, ymax)</box>. Always include step-by-step logical reasoning for your conclusions."
         }
         
         messages = [system_prompt] + self.history

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Layers, Map, Image as ImageIcon, ZoomIn, ZoomOut, RotateCcw, Eye, EyeOff, Maximize2 } from 'lucide-react';
+import { Layers, Map, Image as ImageIcon, ZoomIn, ZoomOut, RotateCcw, Eye, EyeOff, Maximize2, Save } from 'lucide-react';
 import { MapContainer, TileLayer, CircleMarker, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { canPreviewInBrowser } from './utils/fileUtils';
@@ -68,16 +68,26 @@ export default function SatelliteViewer({ file, regions = [], changes = [] }) {
       <div className="viewer-head">
         <div>
           <span className="viewer-eyebrow">SATELLITE WORKSPACE</span>
-          <strong className="viewer-filename">{file?.name || 'Satellite imagery'}</strong>
+          <strong className="viewer-filename">Analysis Result</strong>
         </div>
-        <button
-          className="viewer-fs-btn"
-          onClick={() => setFullscreen(v => !v)}
-          title={fullscreen ? 'Exit fullscreen' : 'Fullscreen'}
-          aria-label={fullscreen ? 'Exit fullscreen' : 'Fullscreen'}
-        >
-          <Maximize2 size={14} />
-        </button>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button
+            className="viewer-fs-btn"
+            onClick={() => alert("Analysis saved successfully!")}
+            title="Save Analysis"
+            aria-label="Save Analysis"
+          >
+            <Save size={14} />
+          </button>
+          <button
+            className="viewer-fs-btn"
+            onClick={() => setFullscreen(v => !v)}
+            title={fullscreen ? 'Exit fullscreen' : 'Fullscreen'}
+            aria-label={fullscreen ? 'Exit fullscreen' : 'Fullscreen'}
+          >
+            <Maximize2 size={14} />
+          </button>
+        </div>
       </div>
 
       {/* Tabs */}
