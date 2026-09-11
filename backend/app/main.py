@@ -20,8 +20,8 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="SatQuery AI API",
-    description="Satellite image analysis API. AI models are mocked for now.",
-    version=settings.APP_VERSION,
+    description="Satellite image analysis API powered by fine-tuned Qwen-VL.",
+    version="1.0.0",
     lifespan=lifespan,
 )
 
