@@ -33,6 +33,20 @@ export default function ExecutionSummary({ execution }) {
             <span className="exec-value">{taskDetected || 'Not specified'}</span>
           </div>
 
+          {execution.steps && execution.steps.length > 0 && (
+            <div className="exec-row exec-steps-row" style={{ marginTop: '8px', padding: '8px', background: 'rgba(0,0,0,0.02)', borderRadius: '4px', border: '1px solid var(--border)' }}>
+              <span className="exec-label" style={{ marginBottom: '4px', display: 'block', fontWeight: 600 }}>Agent Execution Trace</span>
+              <div className="exec-steps-list" style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '11px', fontFamily: 'monospace', color: 'var(--text-secondary)' }}>
+                {execution.steps.map((step, idx) => (
+                  <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ color: '#3b82f6' }}>{'>'}</span>
+                    <span>{step}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {tools?.length > 0 && (
             <div className="exec-row">
               <span className="exec-label"><Cpu size={12} /> Models / tools</span>
