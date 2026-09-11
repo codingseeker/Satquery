@@ -67,7 +67,7 @@ Thumbs.db
 *.pt
 *.pth
 *.ckpt
-models/
+/models/
 model/
 # Python
 __pycache__/

@@ -1,4 +1,4 @@
-﻿from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Float, JSON
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Float, JSON
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.database import Base
@@ -10,10 +10,12 @@ class Analysis(Base):
     user_id = Column(Integer, ForeignKey('users.id'))
     query = Column(String)
     original_filename = Column(String)
+    stored_filename = Column(String, nullable=True)
     task = Column(String, nullable=True)
     status = Column(String)
     confidence = Column(Float, nullable=True)
     answer = Column(String, nullable=True)
+    result_json = Column(String, nullable=True)
     stats = Column(JSON, nullable=True)
     regions = Column(JSON, nullable=True)
     map = Column(JSON, nullable=True)

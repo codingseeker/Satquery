@@ -84,6 +84,7 @@ export default function SatelliteViewer({ file, regions = [], changes = [] }) {
       <div className="viewer-tabs" role="tablist">
         {[
           { id: 'image', Icon: ImageIcon, label: 'Image' },
+          { id: 'side-by-side', Icon: Eye, label: 'Side-by-side' },
           { id: 'map', Icon: Map, label: 'Map' },
           { id: 'layers', Icon: Layers, label: 'Layers' },
         ].map(({ id, Icon, label }) => (
@@ -192,6 +193,73 @@ export default function SatelliteViewer({ file, regions = [], changes = [] }) {
                 )}
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Side-by-side tab */}
+      {tab === 'side-by-side' && (
+        <div className="viewer-image-panel side-by-side-layout" style={{ display: 'flex', gap: '1rem', width: '100%', height: '100%' }}>
+          {/* Original Image */}
+          <div className="viewer-canvas" style={{ flex: 1, position: 'relative', borderRight: '1px solid var(--accent-border)' }}>
+            <div className="viewer-overlay-top" style={{ zIndex: 10 }}><span>ORIGINAL</span></div>
+            {canPreview ? (
+              <img
+                src={imageUrl}
+                alt={`Original: ${file.name}`}
+                style={{ transform: `scale(${scale})`, transformOrigin: 'center', width: '100%', height: '100%', objectFit: 'contain' }}
+                draggable={false}
+              />
+            ) : (
+              <div className="viewer-placeholder">
+                <span className="viewer-placeholder-icon" aria-hidden="true">🛰️</span>
+                <strong>GeoTIFF — browser preview not available</strong>
+              </div>
+            )}
+          </div>
+          
+          {/* Annotated Image */}
+          <div className="viewer-canvas" style={{ flex: 1, position: 'relative' }}>
+            <div className="viewer-overlay-top" style={{ zIndex: 10 }}><span>ANNOTATED BY AI</span></div>
+            {canPreview ? (
+              <img
+                src={imageUrl}
+                alt={`Annotated: ${file.name}`}
+                style={{ transform: `scale(${scale})`, transformOrigin: 'center', width: '100%', height: '100%', objectFit: 'contain' }}
+                draggable={false}
+              />
+            ) : null}
+
+            {/* Region overlays */}
+            {hasRegions && regions.map(r => (
+              <div
+                key={r.id}
+                className="viewer-region"
+                style={{
+                  position: 'absolute',
+                  left: `${r.bounds.x}%`,
+                  top: `${r.bounds.y}%`,
+                  width: `${r.bounds.w}%`,
+                  height: `${r.bounds.h}%`,
+                  border: '2px solid #3b82f6',
+                  backgroundColor: 'rgba(59, 130, 246, 0.2)'
+                }}
+                title={r.label}
+              >
+                <span className="viewer-region-label" style={{ background: '#3b82f6', color: '#fff', fontSize: '10px', padding: '2px 4px', position: 'absolute', top: '-18px', left: '-2px' }}>
+                  {r.label}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <div className="viewer-controls" style={{ position: 'absolute', bottom: '10px', left: '50%', transform: 'translateX(-50%)', zIndex: 10 }}>
+            <div className="viewer-zoom-controls">
+              <button onClick={() => setZoom(z => Math.max(0.5, z - 0.15))} title="Zoom out"><ZoomOut size={14} /></button>
+              <span>{Math.round(scale * 100)}%</span>
+              <button onClick={() => setZoom(z => Math.min(2.8, z + 0.15))} title="Zoom in"><ZoomIn size={14} /></button>
+              <button onClick={() => setZoom(1)} title="Reset zoom"><RotateCcw size={13} /></button>
+            </div>
           </div>
         </div>
       )}
