@@ -2,13 +2,13 @@
 
 SatQuery AI is a comprehensive full-stack solution built for the Smart India Hackathon (SIH 2026) for ISRO problem statement **SIH26167**. 
 
-It allows users to interactively query satellite imagery via a modern React interface, powered by a custom-trained Vision-Language AI model (Qwen2.5-VL with a locally fine-tuned LoRA adapter).
+It allows users to interactively query satellite imagery via a modern React interface, powered by a custom-trained Vision-Language AI model (\Qwen2.5-VL\ with a locally fine-tuned LoRA adapter).
 
 ## System Architecture
 
 - **Frontend:** React + Vite (runs on port 2000)
 - **Backend:** FastAPI + SQLite (runs on port 4000)
-- **AI Service:** Integrated directly into the backend, utilizing 	ransformers, peft, and itsandbytes to serve the satquery-best-lora weights directly in 4-bit precision.
+- **AI Service:** Integrated directly into the backend, utilizing \	ransformers\, \peft\, and \itsandbytes\ to serve the \satquery-best-lora\ weights directly in 4-bit precision.
 
 ## Running the Application Locally
 
@@ -24,30 +24,28 @@ Since this setup utilizes large model caches and local weights, the application 
 
 Open a terminal and run the FastAPI server:
 
-`powershell
+\\powershell
 cd backend
 python -m venv .venv
-.\.venv\Scripts\activate
+.\.venv\Scriptsctivate
 pip install -r requirements.txt
 python -m uvicorn app.main:app --port 4000
-`
-*Note: The backend uses a local SQLite file (satquery.db). No PostgreSQL server is required.*
+\*Note: The backend uses a local SQLite file (\satquery.db\). No PostgreSQL server is required.*
 
 ### 3. Start the Frontend UI (Port 2000)
 
 Open a second terminal and run the React application:
 
-`powershell
+\\powershell
 cd frontend
 npm install
 npm run dev
-`
-
+\
 Visit **http://localhost:2000** in your browser.
 
 ## Custom Trained AI Pipeline
 
-The system uses the Qwen2.5-VL-3B-Instruct base model fine-tuned on the BigEarthNet dataset using QLoRA.
-- The training scripts and data preparation routines are located in 	raining/scripts/.
-- The locally trained adapter (satquery-best-lora) successfully handles complex spatial distributions, identifies coastlines, vegetation, water bodies, and handles conversational multi-turn AI interactions cleanly.
-- The AI_MODE in ackend/ai_service/real_service.py has been fully wired up. The AI automatically detects markdown, structures plain text for the frontend UI, and parses Qwen <box> tags into visual bounding boxes!
+The system uses the \Qwen2.5-VL-3B-Instruct\ base model fine-tuned on the BigEarthNet dataset using QLoRA.
+- The training scripts and data preparation routines are located in \	raining/scripts/\.
+- The locally trained adapter (\satquery-best-lora\) successfully handles complex spatial distributions, identifies coastlines, vegetation, water bodies, and handles conversational multi-turn AI interactions cleanly.
+- The \AI_MODE\ in \ackend/ai_service/real_service.py\ has been fully wired up. The AI automatically detects markdown, structures plain text for the frontend UI, and parses Qwen \<box>\ tags into visual bounding boxes!
