@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from app.config import get_settings
 from app.database import Base, engine, SessionLocal
-from app.routers import auth, analysis, chats, users, images, query, reports
+from app.routers import auth, analysis, chats, users, images, query, reports, geospatial
 
 settings = get_settings()
 
@@ -14,8 +14,11 @@ settings = get_settings()
 async def lifespan(app: FastAPI):
     os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
     os.makedirs(os.path.join(settings.UPLOAD_DIR, "images"), exist_ok=True)
+    # Create tables
     Base.metadata.create_all(bind=engine)
     yield
+    # Cleanup
+    pass
 
 
 app = FastAPI(
@@ -25,21 +28,26 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+
+# Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.FRONTEND_URL, "http://localhost:5173", "http://localhost:1000"],
+    allow_origins=[settings.FRONTEND_URL],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+
+# Include routers
 app.include_router(auth.router)
-app.include_router(chats.router)
 app.include_router(analysis.router)
+app.include_router(chats.router)
 app.include_router(users.router)
 app.include_router(images.router)
 app.include_router(query.router)
 app.include_router(reports.router)
+app.include_router(geospatial.router)
 
 
 @app.get("/health", tags=["health"])

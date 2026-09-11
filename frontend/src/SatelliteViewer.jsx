@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Layers, Map, Image as ImageIcon, ZoomIn, ZoomOut, RotateCcw, Eye, EyeOff, Maximize2, Save } from 'lucide-react';
-import { MapContainer, TileLayer, CircleMarker, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, CircleMarker, GeoJSON, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { canPreviewInBrowser } from './utils/fileUtils';
 
@@ -44,7 +44,7 @@ function RecenterButton() {
  *
  * @param {{ file: UploadedFile, regions: Region[], changes: Change[] }} props
  */
-export default function SatelliteViewer({ file, regions = [], changes = [] }) {
+export default function SatelliteViewer({ file, regions = [], changes = [], mapData = {}, metadata = {} }) {
   const [tab, setTab] = useState('image');
   const [zoom, setZoom] = useState(1);
   const [showRegions, setShowRegions] = useState(true);
@@ -149,7 +149,7 @@ export default function SatelliteViewer({ file, regions = [], changes = [] }) {
               ))}
 
               {/* Change overlays */}
-              {showChanges && hasChanges && changes.map(c => (
+              {showChanges && hasChanges && changes.filter(c => c.bounds).map(c => (
                 <div
                   key={c.id}
                   className={`viewer-change viewer-change-${c.type}`}
@@ -283,7 +283,7 @@ export default function SatelliteViewer({ file, regions = [], changes = [] }) {
       {/* Map tab */}
       {tab === 'map' && (
         <div className="viewer-map-panel">
-          <MapContainer center={DEFAULT_CENTER} zoom={14} scrollWheelZoom className="viewer-leaflet">
+          <MapContainer center={mapData?.center || DEFAULT_CENTER} zoom={mapData?.zoom || 14} scrollWheelZoom className="viewer-leaflet">
             <TileLayer
               url={layers.sar
                 ? 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
@@ -291,7 +291,11 @@ export default function SatelliteViewer({ file, regions = [], changes = [] }) {
               }
               attribution={layers.sar ? '© OpenStreetMap contributors' : 'Tiles © Esri'}
             />
-            {/* Real footprint from metadata would go here */}
+            {mapData?.geojson && <GeoJSON data={mapData.geojson} style={() => ({ weight: 2, fillOpacity: 0.22 })} />}
+            {metadata?.bounds && <GeoJSON data={{ type: 'Feature', properties: { source: 'raster footprint' }, geometry: { type: 'Polygon', coordinates: [[
+              [metadata.bounds.left, metadata.bounds.bottom], [metadata.bounds.left, metadata.bounds.top],
+              [metadata.bounds.right, metadata.bounds.top], [metadata.bounds.right, metadata.bounds.bottom], [metadata.bounds.left, metadata.bounds.bottom]
+            ]] } }} style={() => ({ weight: 1, fillOpacity: 0.05 })} />}
             <RecenterButton />
             <CoordinateTracker />
           </MapContainer>

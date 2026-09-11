@@ -72,3 +72,13 @@ def delete_upload(user: User, stored_filename: str) -> None:
         os.remove(dest)
     except HTTPException:
         pass
+
+def resolve_image_path(user: User, stored_filename: str) -> str:
+    """Resolve files stored by /api/images without allowing path traversal."""
+    user_dir = os.path.join(settings.UPLOAD_DIR, f"images/{user.id}")
+    if not stored_filename or os.path.basename(stored_filename) != stored_filename:
+        raise HTTPException(status_code=400, detail="Invalid file reference")
+    dest = os.path.join(user_dir, stored_filename)
+    if not os.path.isfile(dest):
+        raise HTTPException(status_code=404, detail="File not found")
+    return dest
