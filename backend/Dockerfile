@@ -12,13 +12,13 @@ COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY backend/app ./app
-COPY ai_service ./ai_service
+COPY backend/ai_service ./ai_service
 
 ENV DATABASE_URL=postgresql://satquery:satquery@db:5432/satquery \
     UPLOAD_DIR=/app/uploads \
-    FRONTEND_URL=http://localhost:5173 \
-    AI_MODE=mock \
-    MODEL_PATH=
+    FRONTEND_URL=http://localhost:2000 \
+    AI_MODE=real \
+    MODEL_PATH=training/models/satquery-best-lora
 
 EXPOSE 8000
 
