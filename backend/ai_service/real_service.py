@@ -84,6 +84,10 @@ class RealAIService(AIService):
         else:
             execution_steps.append("[GeospatialAgent] -> No valid GeoTIFF context found, running standard VQA")
         
+        # Ensure the model outputs bounding boxes if the user asks to locate, mark, or find something.
+        if any(word in query.lower() for word in ["locate", "find", "where", "mark", "highlight", "show"]):
+            augmented_query += "\nIMPORTANT: You must find the requested features and explicitly output their bounding boxes using the format <box>(xmin, ymin), (xmax, ymax)</box>."
+        
         print(f"Analyzing query: '{augmented_query}' for image: {image_path}")
         
         execution_steps.append("[VisionAgent] -> Running multimodal inference...")

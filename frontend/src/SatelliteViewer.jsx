@@ -73,9 +73,51 @@ export default function SatelliteViewer({ file, regions = [], changes = [], mapD
         <div style={{ display: 'flex', gap: '8px' }}>
           <button
             className="viewer-fs-btn"
-            onClick={() => alert("Analysis saved successfully!")}
-            title="Save Analysis"
-            aria-label="Save Analysis"
+            onClick={() => {
+              if (!imageUrl || !canPreview) return alert('No valid image preview to save.');
+              const img = new window.Image();
+              img.crossOrigin = 'anonymous';
+              img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+                
+                // Draw regions
+                if (regions && regions.length > 0) {
+                  regions.forEach(r => {
+                    const x = (r.bounds.x / 100) * canvas.width;
+                    const y = (r.bounds.y / 100) * canvas.height;
+                    const w = (r.bounds.w / 100) * canvas.width;
+                    const h = (r.bounds.h / 100) * canvas.height;
+                    
+                    ctx.lineWidth = Math.max(2, canvas.width * 0.005);
+                    ctx.strokeStyle = activeRegionId === r.id ? '#ef4444' : '#3b82f6';
+                    ctx.strokeRect(x, y, w, h);
+                    
+                    // Label background
+                    ctx.fillStyle = activeRegionId === r.id ? '#ef4444' : '#3b82f6';
+                    const fontSize = Math.max(12, canvas.width * 0.015);
+                    ctx.font = `${fontSize}px sans-serif`;
+                    const textWidth = ctx.measureText(r.label).width;
+                    ctx.fillRect(x, y > fontSize + 4 ? y - fontSize - 4 : y, textWidth + 8, fontSize + 4);
+                    
+                    // Label text
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillText(r.label, x + 4, y > fontSize + 4 ? y - 4 : y + fontSize);
+                  });
+                }
+                
+                const link = document.createElement('a');
+                link.download = `annotated_${file.name || 'image'}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+              };
+              img.src = imageUrl;
+            }}
+            title="Save Annotated Image"
+            aria-label="Save Annotated Image"
           >
             <Save size={14} />
           </button>
