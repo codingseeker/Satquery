@@ -54,6 +54,8 @@ class APIClient {
           localStorage.removeItem('satquery_token');
           localStorage.removeItem('satquery_email');
           window.location.reload();
+          // Stall to prevent UI from rendering error banner while reloading
+          return new Promise(() => {});
         }
         const message = errorData?.detail || errorData?.message || `Request failed with status ${response.status}`;
         throw new APIError(message, response.status, errorData);
@@ -116,6 +118,7 @@ class APIClient {
           localStorage.removeItem('satquery_token');
           localStorage.removeItem('satquery_email');
           window.location.reload();
+          return new Promise(() => {});
         }
         const message = errorData?.detail || errorData?.message || `Upload failed with status ${response.status}`;
         throw new APIError(message, response.status, errorData);

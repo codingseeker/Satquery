@@ -63,6 +63,12 @@ function uploadWithProgress(formData, onProgress) {
     xhr.addEventListener('abort', () => reject(new Error('Upload was cancelled.')));
 
     xhr.open('POST', `${config.apiBaseUrl}/api/images/upload`);
+    
+    const token = localStorage.getItem('satquery_token');
+    if (token) {
+      xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+    }
+
     xhr.send(formData);
   });
 }
