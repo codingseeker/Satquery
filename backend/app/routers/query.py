@@ -30,7 +30,7 @@ def _resolve_image_path(user_id: int, image: Image) -> str:
 
 
 @router.post("/query")
-async def handle_query(
+def handle_query(
     body: QueryRequest,
     request: Request,
     db: Session = Depends(get_db),

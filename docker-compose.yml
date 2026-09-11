@@ -1,3 +1,18 @@
+# ---------------------------------------------------------
+# Local development only.
+# Production uses: Vercel (frontend) + Render (backend) + managed PostgreSQL.
+#
+# Persistence model
+# -----------------
+# - pgdata        : named volume holding the PostgreSQL database files.
+#                   Registered users and all application data survive
+#                   `docker compose down`/`up` and container recreation.
+# - backend_data  : named volume mounted at /app/data so a SQLite fallback
+#                   (DATABASE_URL=sqlite:///./data/app.db) is also persistent.
+# - ./backend/uploads : host bind mount for uploaded files (user data, not DB).
+# No caches, build artifacts, or temp files are treated as persistent state.
+# ---------------------------------------------------------
+
 services:
   db:
     image: postgres:16-alpine
@@ -22,20 +37,33 @@ services:
       dockerfile: backend/Dockerfile
     container_name: satquery-backend
     env_file:
-      - ./backend/.env
+      - path: ./backend/.env
+        required: false
     environment:
-      DATABASE_URL: postgresql://satquery:satquery@db:5432/satquery
+      # `db` is the compose service name; `localhost` would point at the
+      # container itself and could never reach PostgreSQL. Override via the
+      # root `.env` file with DATABASE_URL=... if you need a different target.
+      DATABASE_URL: ${DATABASE_URL:-postgresql://satquery:satquery@db:5432/satquery}
       UPLOAD_DIR: /app/uploads
-      AI_MODE: mock
-      MODEL_PATH: ""
+      AI_MODE: ${AI_MODE:-mock}
+      MODEL_PATH: ${MODEL_PATH:-}
       PYTHONPATH: /app
+      WEB_CONCURRENCY: ${WEB_CONCURRENCY:-2}
     ports:
       - "4000:8000"
     volumes:
+      # Persistent application data.
+      - backend_data:/app/data
+      # User-uploaded files (kept on the host for local development).
       - ./backend/uploads:/app/uploads
     depends_on:
       db:
         condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+          cpus: "2"
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
       interval: 10s
@@ -57,3 +85,6 @@ services:
 
 volumes:
   pgdata:
+    name: satquery_pgdata
+  backend_data:
+    name: satquery_backend_data

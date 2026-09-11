@@ -1,16 +1,30 @@
-from fastapi import APIRouter, Depends, File, Form, Request, UploadFile, status
-from fastapi.responses import FileResponse
+import os
+
+from fastapi import (
+    APIRouter,
+    Depends,
+    File,
+    Form,
+    HTTPException,
+    Request,
+    UploadFile,
+    status,
+)
 from sqlalchemy.orm import Session
+
+from app.config import get_settings
 from app.database import get_db
 from app.models.user import User
-from app.utils.dependencies import get_current_user
 from app.services import analysis_service, file_service
+from app.utils.dependencies import get_current_user
 
+
+settings = get_settings()
 router = APIRouter(prefix="/api/analysis", tags=["analysis"])
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
-async def create_analysis(
+def create_analysis(
     request: Request,
     file: UploadFile = File(...),
     query: str = Form(...),
@@ -18,23 +32,55 @@ async def create_analysis(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
-    chat = analysis_service.get_owned_chat(db, chat_id, user)
-    if not query.strip():
-        from fastapi import HTTPException
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Query must not be empty")
-
     original_filename, ext = file_service.validate_upload(file)
-    analysis = analysis_service.create_analysis(
-        db, chat, user, query.strip(), original_filename, "temp"
-    )
-    stored_filename = await file_service.save_upload(file, user, analysis.id, ext)
-    analysis.stored_filename = stored_filename
-    db.commit()
-    db.refresh(analysis)
+    file_service.enforce_upload_size(file)
 
-    analysis = analysis_service.run_analysis(db, analysis)
+    chat = analysis_service.get_owned_chat(db, chat_id, user)
+
+    if not query.strip():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Query must not be empty",
+        )
+
+    user_dir = os.path.join(settings.UPLOAD_DIR, str(user.id))
+    os.makedirs(user_dir, exist_ok=True)
+
+    temp_filename = f"upload_{os.urandom(16).hex()}.{ext}"
+    dest = os.path.join(user_dir, temp_filename)
+
+    try:
+        size = file_service.stream_to_file_with_limit(file, dest)
+
+        analysis = analysis_service.create_analysis(
+            db,
+            chat,
+            user,
+            query.strip(),
+            original_filename,
+            temp_filename,
+        )
+
+        analysis.stored_filename = temp_filename
+        db.commit()
+        db.refresh(analysis)
+
+    except Exception:
+        db.rollback()
+
+        try:
+            os.remove(dest)
+        except FileNotFoundError:
+            pass
+
+        raise
+
     base_url = str(request.base_url).rstrip("/")
-    return analysis_service.serialize_analysis(analysis, base_url)
+
+    return analysis_service.serialize_analysis(
+        analysis,
+        base_url,
+    )
 
 
 @router.get("/{analysis_id}")
@@ -44,31 +90,54 @@ def get_analysis(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
-    analysis = analysis_service.get_owned_analysis(db, analysis_id, user)
+    analysis = analysis_service.get_owned_analysis(
+        db,
+        analysis_id,
+        user,
+    )
+
     base_url = str(request.base_url).rstrip("/")
-    return analysis_service.serialize_analysis(analysis, base_url)
 
-
-@router.delete("/{analysis_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_analysis(
-    analysis_id: int,
-    db: Session = Depends(get_db),
-    user: User = Depends(get_current_user),
-):
-    analysis = analysis_service.get_owned_analysis(db, analysis_id, user)
-    file_service.delete_upload(user, analysis.stored_filename)
-    db.delete(analysis)
-    db.commit()
-    return None
+    return analysis_service.serialize_analysis(
+        analysis,
+        base_url,
+    )
 
 
 @router.get("/{analysis_id}/file")
-def download_analysis_file(
+def get_analysis_file(
     analysis_id: int,
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
-    analysis = analysis_service.get_owned_analysis(db, analysis_id, user)
-    dest = file_service.resolve_upload_path(user, analysis.stored_filename)
-    media_type = file_service.media_type_for(analysis.stored_filename)
-    return FileResponse(dest, media_type=media_type, filename=analysis.original_filename)
+    from fastapi.responses import FileResponse
+
+    analysis = analysis_service.get_owned_analysis(
+        db,
+        analysis_id,
+        user,
+    )
+
+    if not analysis.stored_filename:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Analysis file not found",
+        )
+
+    file_path = os.path.join(
+        settings.UPLOAD_DIR,
+        str(analysis.user_id),
+        analysis.stored_filename,
+    )
+
+    if not os.path.exists(file_path):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Analysis file not found",
+        )
+
+    return FileResponse(
+        file_path,
+        media_type="application/octet-stream",
+        filename=analysis.original_filename,
+    )

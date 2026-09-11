@@ -12,7 +12,7 @@ router = APIRouter(prefix="/api/chats", tags=["chats"])
 
 @router.get("", response_model=list[ChatOut])
 def list_chats(db: Session = Depends(get_db), user: User = Depends(get_current_user)):
-    return user.chats
+    return db.query(Chat).filter(Chat.user_id == user.id).order_by(Chat.updated_at.desc()).all()
 
 
 @router.post("", response_model=ChatOut, status_code=status.HTTP_201_CREATED)
