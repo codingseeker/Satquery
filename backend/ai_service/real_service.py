@@ -99,15 +99,22 @@ class RealAIService(AIService):
         import re
         text = result.get("answer", "")
         
-        # Clean up markdown stars/hashes since frontend expects structured plain text
-        clean_text = text.replace("**", "").replace("##", "").replace("#", "")
-        result["answer"] = clean_text
-
+        # Keep markdown intact since the frontend supports it and the user wants ChatGPT-style formatting
+        clean_text = text
+        print(f"RAW MODEL OUTPUT: {clean_text}")
+        
         regions = []
-        # Robust regex to match 4 numbers following a <box or <|box_start|> tag
-        # Matches: <box>(200, 300), (400, 500)</box> OR <box>(0,0,811,588)
-        box_pattern = r"<box[^>]*>.*?(\d+)\D+(\d+)\D+(\d+)\D+(\d+)"
-        for idx, match in enumerate(re.finditer(box_pattern, clean_text)):
+        # Robust regex to match 4 numbers anywhere in a box tag sequence
+        import re
+        box_pattern = r"<box[^>]*>.*?(\d+)\D+(\d+)\D+(\d+)\D+(\d+).*?</box>"
+        # Fallback if no </box>
+        box_pattern2 = r"<box[^>]*>.*?(\d+)\D+(\d+)\D+(\d+)\D+(\d+)"
+        
+        matches = list(re.finditer(box_pattern, clean_text))
+        if not matches:
+             matches = list(re.finditer(box_pattern2, clean_text))
+             
+        for idx, match in enumerate(matches):
             xmin, ymin, xmax, ymax = map(int, match.groups())
             
             # Normalize to 0-100 percentages.
@@ -120,16 +127,27 @@ class RealAIService(AIService):
             if h < 0: h = 5
             if w < 0: w = 5
             
+            # Try to extract the label immediately following or preceding the box
+            label = f"Detection {idx + 1}"
+            
             regions.append({
                 "id": idx + 1,
-                "label": f"Detection {idx + 1}",
+                "label": label,
                 "bounds": {"x": x, "y": y, "w": w, "h": h}
             })
-            
-        execution_steps.append(f"[DataInterpreterAgent] -> Extracted {len(regions)} spatial regions")
+
+        # Strip all <box> tags from the final text sent to the frontend so it renders cleanly
+        # Replace `<box>...</box>` and `<box>...` completely
+        frontend_text = re.sub(r"<box[^>]*>.*?</box>", "", clean_text, flags=re.DOTALL)
+        frontend_text = re.sub(r"<box[^>]*>.*?(?=<|$)", "", frontend_text, flags=re.DOTALL)
+        frontend_text = frontend_text.replace("</box>", "")
+        frontend_text = frontend_text.strip()
         
-        # Optional: strip the raw <box> tags from the final text shown to the user so it looks cleaner
-        result["answer"] = re.sub(r"<box[^>]*>.*?(\(\d+\D+\d+\D+\d+\D+\d+\)|\d+\D+\d+\D+\d+\D+\d+)(</box>)?", "", result["answer"])
+        if not frontend_text:
+             frontend_text = "Analysis complete. See highlighted regions in the image viewer."
+        result["answer"] = frontend_text
+        
+        execution_steps.append(f"[DataInterpreterAgent] -> Extracted {len(regions)} spatial regions")
         
         # Construct GeoJSON for grounding
         geojson = {
@@ -177,4 +195,5 @@ class RealAIService(AIService):
         execution_steps.append("[SynthesisAgent] -> Final response returned")
         
         return result
+
 
