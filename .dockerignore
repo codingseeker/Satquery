@@ -1,0 +1,11 @@
+frontend/node_modules
+frontend/dist
+backend/.venv
+backend/__pycache__
+**/__pycache__
+**/*.pyc
+*.db
+*.sqlite
+storage/uploads
+storage/results
+.git

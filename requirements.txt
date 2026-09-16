@@ -1,0 +1,24 @@
+# Core ML stack
+torch==2.5.1+cu121
+torchaudio==2.5.1+cu121
+torchvision==0.20.1+cu121
+
+# HuggingFace
+transformers==5.17.0
+datasets==5.0.1
+peft==0.20.0
+accelerate==1.15.0
+trl==1.13.0
+safetensors==0.8.0
+
+# Quantization
+bitsandbytes==0.50.2
+
+# Qwen2.5-VL vision utilities
+qwen-vl-utils==0.0.14
+
+# Data processing
+lmdb==2.3.0
+numpy==2.4.6
+pandas==3.0.5
+pillow==12.3.0
