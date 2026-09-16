@@ -1,38 +1,35 @@
 ﻿# SatQuery AI
-
+`
 SatQuery AI is a multimodal AI platform built for ISRO's Smart India Hackathon 2024. It lets you upload satellite imagery and ask questions about it in plain English. The system analyzes the image using a fine-tuned Vision Language Model, draws bounding boxes around detected features, and shows the result in a side-by-side annotated viewer alongside a structured textual response.
-
+`
 The model runs entirely on-device without any external API calls to OpenAI, Gemini, or any other cloud AI service.
-
-
+``
 ## Screenshots
-
+`
 The following screenshots show the working model running locally.
-
+`
 Chat Interface with Structured AI Analysis
-
+`
 ![Chat analysis output](docs/screenshots/chat_analysis.png)
-
+`
 The AI produces a detailed, structured textual analysis explaining what it observes in the satellite image, including detected regions like coastal areas, urban density, and water bodies.
-
+`
 Side-by-side Annotated Image Viewer
-
+`
 ![Side by side annotated viewer](docs/screenshots/side_by_side_viewer.png)
-
+`
 After the analysis, you can open the image viewer which shows the original image on the left and the AI-annotated version on the right with bounding boxes drawn over detected features.
-
-
+``
 ## Tech Stack
-
+`
 The project is split into two parts: a Python backend that handles AI inference and a React frontend that handles the user interface.
-
+`
 Backend is built with Python. Frontend is built with React using Vite as the build tool.
-
-
+``
 ## Libraries Used
-
+`
 ### Backend Libraries
-
+`
 | Library | Version | How it is used in SatQuery AI |
 | --- | --- | --- |
 | FastAPI | 0.115.6 | Serves all the REST API endpoints. Handles image uploads, query processing, authentication, and conversation history. |
@@ -52,21 +49,19 @@ Backend is built with Python. Frontend is built with React using Vite as the bui
 | qwen-vl-utils | 0.0.14 | Provides the process_vision_info utility that correctly prepares image tensors for the Qwen2.5-VL model visual encoder. |
 | NumPy | 2.4.6 | Used inside the Rasterio pipeline to read band arrays and compute the NDVI index for vegetation analysis. |
 | email-validator | 2.2.0 | Validates that email addresses provided during user registration are properly formatted before saving to the database. |
-
+`
 ### Frontend Libraries
-
+`
 | Library | Version | How it is used in SatQuery AI |
 | --- | --- | --- |
 | React | 18.3.1 | Builds the entire user interface as reusable components including the chat window, image viewer, sidebar, and settings panel. |
 | Vite | 6.0.5 | Bundles and serves the React application with hot module replacement during development and optimized output for production. |
 | Lucide React | 0.468.0 | Provides all the icons used throughout the interface such as the satellite icon, layer controls, zoom buttons, and action toolbar icons. |
 | Tailwind CSS | 3.4.16 | Used for base utility classes in the layout. The application also maintains a custom CSS file for the dark geospatial theme. |
-
-
+``
 ## Project Structure
-
+`
 The following files and folders are required for the project to run. Do not delete any of these.
-
 `
 Satquery-Final-Production/
   backend/
@@ -116,13 +111,12 @@ Satquery-Final-Production/
   .gitignore                Files and folders excluded from version control
   .gitattributes            Git LFS configuration for large model weight files
   docker-compose.yml        Docker configuration for running backend and frontend together
-`
-
-
+``
+``
 ## Files Excluded from the Repository
-
+`
 The following are not committed because they are either too large, contain secrets, or are auto-generated.
-
+`
 - .venv/ and node_modules/ — install these locally using pip install and npm install
 - backend/.env — copy from backend/.env.example and fill in your values
 - backend/uploads/ and uploads/ — user-uploaded images, created automatically at runtime
@@ -130,21 +124,20 @@ The following are not committed because they are either too large, contain secre
 - training/data/ — raw and processed training datasets, not included due to size
 - training/outputs/checkpoints/ — intermediate training checkpoints
 - training/models/qwen25vl/ — the 6GB base model, downloaded automatically from HuggingFace at runtime
-
-
+``
 ## Getting Started
-
+`
 You need Python 3.10 or higher and Node.js 18 or higher. A CUDA-compatible GPU is strongly recommended.
-
+`
 Clone the repository.
-
+`
 `
 git clone https://github.com/codingseeker/Satquery.git
 cd Satquery
 `
-
+`
 Start the backend.
-
+`
 `
 cd backend
 python -m venv .venv
@@ -153,25 +146,22 @@ pip install -r requirements.txt
 cp .env.example .env
 python -m uvicorn app.main:app --port 4000
 `
-
+`
 Start the frontend in a second terminal.
-
+`
 `
 cd frontend
 npm install
 npm run dev
 `
-
+`
 Open http://localhost:2000 in your browser. Create an account, upload a satellite image, and start querying.
-
-
+``
 ## Model
-
+`
 The AI model is Qwen2.5-VL-3B-Instruct fine-tuned with LoRA on ISRO remote sensing datasets. The base model weights are downloaded from HuggingFace automatically at runtime and the LoRA adapter is stored in training/models/satquery-best-lora. The adapter file is tracked with Git LFS because it is approximately 148 MB.
-
+`
 When you run a query, the backend extracts geospatial context from the image using Rasterio, appends it to your query, runs inference through the fine-tuned model, parses bounding box coordinates from the output, converts them to real-world latitude and longitude using the image coordinate reference system, and returns the structured result to the frontend.
-
-
+``
 Built for ISRO and the SIH Hackathon.
-
-
+``
