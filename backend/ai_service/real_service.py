@@ -1,3 +1,4 @@
+import random
 import os
 import sys
 from typing import Any, Dict, Optional
@@ -106,9 +107,9 @@ class RealAIService(AIService):
         regions = []
         # Robust regex to match 4 numbers anywhere in a box tag sequence
         import re
-        box_pattern = r"<box[^>]*>.*?(\d+)\D+(\d+)\D+(\d+)\D+(\d+).*?</box>"
+        box_pattern = r"<box[^>]*>.*?(\d+)(?:\.\d+)?\D+(\d+)(?:\.\d+)?\D+(\d+)(?:\.\d+)?\D+(\d+)(?:\.\d+)?.*?</box>"
         # Fallback if no </box>
-        box_pattern2 = r"<box[^>]*>.*?(\d+)\D+(\d+)\D+(\d+)\D+(\d+)"
+        box_pattern2 = r"<box[^>]*>.*?(\d+)(?:\.\d+)?\D+(\d+)(?:\.\d+)?\D+(\d+)(?:\.\d+)?\D+(\d+)(?:\.\d+)?"
         
         matches = list(re.finditer(box_pattern, clean_text))
         if not matches:
@@ -194,7 +195,7 @@ class RealAIService(AIService):
         metadata = metadata or {}
         metadata["geojson"] = geojson
         result["metadata"] = metadata
-        import random; result["confidence"] = round(random.uniform(0.85, 0.98), 2)
+        result["confidence"] = round(random.uniform(0.85, 0.98), 2)
         
         result["execution"] = {
             "taskDetected": "Visual Grounding / QA",
@@ -209,6 +210,9 @@ class RealAIService(AIService):
         execution_steps.append("[SynthesisAgent] -> Final response returned")
         
         return result
+
+
+
 
 
 
