@@ -126,13 +126,13 @@ Satquery-Final-Production/
 The following are not committed because they are either too large, contain secrets, or are auto-generated.
 
 ```text
-- .venv/ and node_modules/ â€” install these locally using pip install and npm install
-- backend/.env â€” copy from backend/.env.example and fill in your values
-- backend/uploads/ and uploads/ â€” user-uploaded images, created automatically at runtime
-- backend/satquery.db â€” the SQLite database, created automatically on first startup
-- training/data/ â€” raw and processed training datasets, not included due to size
-- training/outputs/checkpoints/ â€” intermediate training checkpoints
-- training/models/qwen25vl/ â€” the 6GB base model, downloaded automatically from HuggingFace at runtime
+- .venv/ and node_modules/ - install these locally using pip install and npm install
+- backend/.env - copy from backend/.env.example and fill in your values
+- backend/uploads/ and uploads/ - user-uploaded images, created automatically at runtime
+- backend/satquery.db - the SQLite database, created automatically on first startup
+- training/data/ - raw and processed training datasets, not included due to size
+- training/outputs/checkpoints/ - intermediate training checkpoints
+- training/models/qwen25vl/ - the 6GB base model, downloaded automatically from HuggingFace at runtime
 ```
 
 ## Getting Started
