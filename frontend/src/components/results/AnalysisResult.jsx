@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
+﻿import React, { useState } from 'react';
+import { Eye, EyeOff, MapPin, Navigation } from 'lucide-react';
 import ConfidenceBadge from '../results/ConfidenceBadge';
 import ExecutionSummary from '../results/ExecutionSummary';
 import SatelliteViewer from '../../SatelliteViewer';
@@ -10,7 +10,8 @@ export default function AnalysisResult({ analysis, uploadedFiles, activeFile }) 
 
   if (!analysis) return null;
 
-  const { answer, taskLabel, confidence, regions, changes, execution } = analysis;
+  const { answer, taskLabel, confidence, regions, changes, execution, metadata } = analysis;
+  const latlon = metadata?.latlon || null;
   const primaryFile = uploadedFiles?.[0] || activeFile;
   const hasVisualOutput = regions?.length > 0 || changes?.length > 0;
 
@@ -79,4 +80,6 @@ export default function AnalysisResult({ analysis, uploadedFiles, activeFile }) 
     </div>
   );
 }
+
+
 

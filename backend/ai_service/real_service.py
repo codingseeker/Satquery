@@ -1,4 +1,4 @@
-import random
+﻿import random
 import os
 import sys
 from typing import Any, Dict, Optional
@@ -61,6 +61,37 @@ class RealAIService(AIService):
             print(f"Rasterio extraction failed or not a GeoTIFF: {e}")
             return ""
 
+    def _extract_latlon_bounds(self, image_path: str) -> dict:
+        try:
+            import rasterio
+            from rasterio.warp import transform_bounds
+            with rasterio.open(image_path) as src:
+                bounds = src.bounds
+                src_crs = src.crs
+                width = src.width
+                height = src.height
+                if src_crs and src_crs.to_epsg() != 4326:
+                    left, bottom, right, top = transform_bounds(src_crs, "EPSG:4326", bounds.left, bounds.bottom, bounds.right, bounds.top)
+                elif src_crs:
+                    left, bottom, right, top = bounds.left, bounds.bottom, bounds.right, bounds.top
+                else:
+                    return {}
+                return {
+                    "lat_min": round(bottom, 6),
+                    "lat_max": round(top, 6),
+                    "lon_min": round(left, 6),
+                    "lon_max": round(right, 6),
+                    "center_lat": round((top + bottom) / 2, 6),
+                    "center_lon": round((left + right) / 2, 6),
+                    "image_width_px": width,
+                    "image_height_px": height,
+                    "crs": src_crs.to_string() if src_crs else "Unknown",
+                }
+        except Exception as e:
+            print(f"Lat/lon extraction failed: {e}")
+            return {}
+
+
     def analyze(
         self,
         image_path: str,
@@ -78,6 +109,8 @@ class RealAIService(AIService):
         
         execution_steps.append("[GeospatialAgent] -> Extracting Rasterio context...")
         geo_context = self._extract_geospatial_context(image_path)
+        latlon_bounds = self._extract_latlon_bounds(image_path)
+        execution_steps.append('[GeospatialAgent] -> Extracted lat/lon bounds for image')
         augmented_query = query
         if geo_context:
             augmented_query = f"{geo_context}\nUser Query: {query}"
@@ -210,6 +243,9 @@ class RealAIService(AIService):
         execution_steps.append("[SynthesisAgent] -> Final response returned")
         
         return result
+
+
+
 
 
 
