@@ -61,59 +61,60 @@ Backend is built with Python. Frontend is built with React using Vite as the bui
 
 ## Project Structure
 
-The following files and folders are required for the project to run. Do not delete any of these.
+The project is divided into two cleanly separated layers: a Python AI backend and a React user interface frontend.
 
+### Backend Structure (`/backend`)
 ```text
-Satquery-Final-Production/
-  backend/
-    ai_service/
-      real_service.py       Main AI inference engine, bounding box parser, and lat/lon extractor
-      base.py               Abstract base class for the AI service interface
-      factory.py            Selects between real and mock AI service based on config
-    app/
-      main.py               FastAPI application entry point and router registration
-      config.py             Environment variable loading and app configuration
-      database.py           SQLAlchemy database connection and session setup
-      routers/              One file per API route group: auth, images, query, users, reports, geospatial
-      models/               SQLAlchemy ORM models for users, chats, images, and analysis
-      schemas/              Pydantic request and response schemas for all routes
-      services/             Business logic for analysis execution and file handling
-    requirements.txt        All Python dependencies needed to run the backend
-    .env.example            Template for the required environment variables
-  frontend/
-    src/
-      main.jsx              Root React component, authentication state, and conversation manager
-      SatelliteViewer.jsx   Image viewer with side-by-side, layers, and annotation canvas tabs
-      components/
-        chat/               Message list, individual message, and composer components
-        results/            Analysis result card, confidence badge, and execution summary
-        image/              File upload zone and file card components
-        layout/             Header and sidebar components
-        settings/           User settings panel with account and preferences
-      services/
-        api.js              Axios HTTP client configured for the backend base URL
-        chatService.js      Functions for creating conversations and sending queries
-        imageService.js     Functions for uploading images to the backend
-      styles.css            All custom CSS for the dark geospatial theme
-    package.json            Node.js dependencies and npm scripts
-    vite.config.js          Vite build configuration including the development proxy
-    index.html              HTML entry point for the React application
-  training/
-    scripts/
-      satquery_inference.py The SatQueryBot class that loads the model and runs inference
-      train.py              LoRA fine-tuning script used to train the satellite domain adapter
-      evaluate_satquery.py  Evaluation script that measures model accuracy on the test set
-    models/
-      satquery-best-lora/   The trained LoRA adapter weights directory (tracked with Git LFS)
-  docs/
-    screenshots/            Working model screenshots embedded in this README
-  requirements.txt          Root-level ML dependencies including PyTorch, Transformers, and PEFT
-  README.md                 This file
-  .gitignore                Files and folders excluded from version control
-  .gitattributes            Git LFS configuration for large model weight files
-  docker-compose.yml        Docker configuration for running backend and frontend together
+backend/
+  ai_service/             AI model orchestration and context extraction
+    real_service.py       Main Vision Language Model inference engine
+    base.py               Abstract service definitions
+    factory.py            Dependency injection factory
+  app/
+    main.py               FastAPI application entry point
+    config.py             Application configuration and environment variables
+    database.py           SQLAlchemy database connection setup
+    routers/              API routes (auth, images, query, users)
+    models/               SQLAlchemy ORM models
+    schemas/              Pydantic validation schemas
+    services/             Business logic for database operations
+  requirements.txt        Production Python dependencies
+  requirements-dev.txt    Development dependencies (e.g. Locust)
+  .env.example            Environment variable template
 ```
 
+### Frontend Structure (`/frontend`)
+```text
+frontend/
+  src/
+    main.jsx              Root React component and authentication context
+    SatelliteViewer.jsx   Core image viewer with side-by-side annotation rendering
+    components/
+      chat/               Message list and input composer
+      results/            AI analysis cards, bounding box lists, and execution summary
+      image/              Drag-and-drop file upload zone
+      layout/             Application shell, header, and sidebar
+      settings/           User preferences and API configuration
+    services/
+      api.js              Axios HTTP client
+      chatService.js      Conversation and query endpoints
+      imageService.js     File upload endpoints
+    styles.css            Custom CSS for the dark geospatial theme
+  package.json            Node.js dependencies and Vite scripts
+  vite.config.js          Vite bundler configuration
+  index.html              HTML entry point
+```
+
+### Training & Model Weights (`/training`)
+```text
+training/
+  scripts/
+    satquery_inference.py Core ML pipeline for model evaluation
+    train.py              LoRA fine-tuning script
+    evaluate_satquery.py  Testing metrics and benchmarks
+  models/
+    satquery-best-lora/   148MB trained LoRA adapter (tracked with Git LFS)
+```
 ## Architecture Overview
 
 - **Frontend Client (React)**: Handles all user interaction, rendering the map and bounding boxes dynamically based on JSON responses.
@@ -174,4 +175,5 @@ The AI model is Qwen2.5-VL-3B-Instruct fine-tuned with LoRA on ISRO remote sensi
 When you run a query, the backend extracts geospatial context from the image using Rasterio, appends it to your query, runs inference through the fine-tuned model, parses bounding box coordinates from the output, converts them to real-world latitude and longitude using the image coordinate reference system, and returns the structured result to the frontend.
 
 Built for ISRO and the SIH Hackathon.
+
 
