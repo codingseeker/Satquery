@@ -63,7 +63,7 @@ Backend is built with Python. Frontend is built with React using Vite as the bui
 
 The following files and folders are required for the project to run. Do not delete any of these.
 
-`	ext
+```text
 Satquery-Final-Production/
   backend/
     ai_service/
@@ -112,20 +112,28 @@ Satquery-Final-Production/
   .gitignore                Files and folders excluded from version control
   .gitattributes            Git LFS configuration for large model weight files
   docker-compose.yml        Docker configuration for running backend and frontend together
-`
+```
+
+## Architecture Architecture Overview
+
+- **Frontend Client (React)**: Handles all user interaction, rendering the map and bounding boxes dynamically based on JSON responses.
+- **Backend API (FastAPI)**: Serves as the orchestration layer between the frontend and the AI model, handling auth and image parsing.
+- **Geospatial Engine (Rasterio)**: Extracts real-world bounding coordinates and projects image pixels to actual geographic lat/lon.
+- **Vision Language Model (Qwen2.5-VL)**: Evaluates the parsed image, generates contextually aware textual answers, and precisely localizes features by returning coordinate vectors.
 
 ## Files Excluded from the Repository
 
 The following are not committed because they are either too large, contain secrets, or are auto-generated.
 
-- .venv/ and 
-ode_modules/ — install these locally using pip install and npm install
-- ackend/.env — copy from ackend/.env.example and fill in your values
-- ackend/uploads/ and uploads/ — user-uploaded images, created automatically at runtime
-- ackend/satquery.db — the SQLite database, created automatically on first startup
-- 	raining/data/ — raw and processed training datasets, not included due to size
-- 	raining/outputs/checkpoints/ — intermediate training checkpoints
-- 	raining/models/qwen25vl/ — the 6GB base model, downloaded automatically from HuggingFace at runtime
+```text
+- .venv/ and node_modules/ — install these locally using pip install and npm install
+- backend/.env — copy from backend/.env.example and fill in your values
+- backend/uploads/ and uploads/ — user-uploaded images, created automatically at runtime
+- backend/satquery.db — the SQLite database, created automatically on first startup
+- training/data/ — raw and processed training datasets, not included due to size
+- training/outputs/checkpoints/ — intermediate training checkpoints
+- training/models/qwen25vl/ — the 6GB base model, downloaded automatically from HuggingFace at runtime
+```
 
 ## Getting Started
 
@@ -133,29 +141,29 @@ You need Python 3.10 or higher and Node.js 18 or higher. A CUDA-compatible GPU i
 
 Clone the repository.
 
-`ash
+```bash
 git clone https://github.com/codingseeker/Satquery.git
 cd Satquery
-`
+```
 
 Start the backend.
 
-`ash
+```bash
 cd backend
 python -m venv .venv
 .venv\Scriptsctivate
 pip install -r requirements.txt
 cp .env.example .env
 python -m uvicorn app.main:app --port 4000
-`
+```
 
 Start the frontend in a second terminal.
 
-`ash
+```bash
 cd frontend
 npm install
 npm run dev
-`
+```
 
 Open http://localhost:2000 in your browser. Create an account, upload a satellite image, and start querying.
 
