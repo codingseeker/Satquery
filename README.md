@@ -41,11 +41,11 @@ Backend is built with Python. Frontend is built with React using Vite as the bui
 | python-dotenv | 1.0.1 | Loads environment variables from the .env file so secrets like the JWT key are not hardcoded in source files. |
 | pydantic | 2.11.0 | Validates the shape and types of all incoming API request bodies and outgoing response objects. |
 | Rasterio | 1.3.10 | Opens GeoTIFF files to extract geospatial metadata including CRS, lat/lon bounds, resolution, and band count. This context is injected directly into the AI prompt. |
-| PyTorch | 2.2.0 | The core tensor computation framework that runs the entire neural network for the Vision Language Model inference. |
-| Transformers (HuggingFace) | 4.40.0 | Loads the Qwen2.5-VL-3B-Instruct model architecture and the multimodal processor that tokenizes both text and image inputs together. |
-| PEFT | 0.10.0 | Applies the trained LoRA adapter weights on top of the base Qwen2.5-VL model so the model specializes in satellite imagery without retraining all 3 billion parameters. |
-| BitsAndBytes | 0.43.1 | Loads the model in 4-bit NF4 quantization so it fits and runs on consumer GPUs that do not have enough VRAM for full precision. |
-| Accelerate | 0.29.0 | Handles device placement and memory management when loading the quantized model across available hardware. |
+| PyTorch | 2.5.1+cu121 | The core tensor computation framework that runs the entire neural network for the Vision Language Model inference. |
+| Transformers (HuggingFace) | 5.17.0 | Loads the Qwen2.5-VL-3B-Instruct model architecture and the multimodal processor that tokenizes both text and image inputs together. |
+| PEFT | 0.20.0 | Applies the trained LoRA adapter weights on top of the base Qwen2.5-VL model so the model specializes in satellite imagery without retraining all 3 billion parameters. |
+| BitsAndBytes | 0.50.2 | Loads the model in 4-bit NF4 quantization so it fits and runs on consumer GPUs that do not have enough VRAM for full precision. |
+| Accelerate | 1.15.0 | Handles device placement and memory management when loading the quantized model across available hardware. |
 | qwen-vl-utils | 0.0.14 | Provides the process_vision_info utility that correctly prepares image tensors for the Qwen2.5-VL model visual encoder. |
 | NumPy | 2.4.6 | Used inside the Rasterio pipeline to read band arrays and compute the NDVI index for vegetation analysis. |
 | email-validator | 2.2.0 | Validates that email addresses provided during user registration are properly formatted before saving to the database. |
