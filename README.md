@@ -1,74 +1,110 @@
-﻿# SatQuery AI 🛰️
+﻿# SatQuery AI
 
-SatQuery AI is a cutting-edge multimodal AI platform designed for advanced geospatial analysis and remote sensing. Built specifically for ISRO's SIH 2024 problem statement, SatQuery acts as an intelligent assistant capable of understanding, analyzing, and annotating satellite imagery in real-time through natural language queries.
+SatQuery AI is a multimodal AI platform built for ISRO's Smart India Hackathon 2024. It lets you upload satellite imagery and ask questions about it in plain English. The system analyzes the image using a fine-tuned Vision Language Model, draws bounding boxes around detected features, and shows the result in a side-by-side annotated viewer alongside a structured textual response.
 
-## 📸 Working Model Screenshots
+The model runs entirely on-device without any external API calls to OpenAI, Gemini, or any other cloud AI service.
 
-*(Add your screenshots here before pushing to GitHub!)*
 
-![Chat Interface](dummy_sat.png)  
-*Example: Conversational AI interface analyzing satellite imagery.*
+## Tech Stack
 
-![Side-by-side Viewer](dummy_sat.png)  
-*Example: Intelligent visual grounding and bounding box annotations.*
+The project is split into two parts: a Python backend that handles AI inference and a React frontend that handles the user interface.
 
-## 🌟 Key Features
+Backend is built with Python. Frontend is built with React using Vite as the build tool.
 
-* **Conversational AI Analysis:** Ask complex questions about satellite imagery (e.g., "Identify water bodies and built-up areas") and receive highly structured, ChatGPT-style detailed textual responses.
-* **Intelligent Visual Grounding:** The AI doesn't just describe what it sees—it draws bounding boxes to precisely locate features in the image, rendering them in a beautiful side-by-side interactive viewer.
-* **Geospatial Awareness:** Natively parses GeoTIFF metadata (CRS, bounds, resolution, and bands) and injects this context directly into the AI's prompt for spatially-aware reasoning.
-* **Dynamic Accuracy Metrics:** Real-time generation of model confidence scores to reflect the AI's certainty based on image complexity and prompt instructions.
-* **Multi-Turn Context:** The platform remembers active images across a chat session, allowing you to ask follow-up questions without re-uploading the data.
 
-## 🛠️ Tech Stack & Libraries Used
+## Libraries Used
 
-Here is a detailed breakdown of every major library powering the SatQuery AI engine:
+### Backend Libraries
 
-| Component | Library / Tech | Why it is used in SatQuery AI |
-| :--- | :--- | :--- |
-| **Frontend Core** | React & Vite | Powers the extremely fast, dynamic user interface and manages conversational state without page reloads. |
-| **Styling** | Tailwind CSS | Provides the sleek, modern dark-mode UI specifically themed for geospatial analysis environments. |
-| **Icons & UI** | Lucide React | Supplies the clean, professional iconography used throughout the chat and image viewer. |
-| **Mapping** | Leaflet | Handles the interactive geospatial map viewer for plotting coordinates and evaluating broad terrain context. |
-| **Backend Core** | FastAPI | The high-performance Python framework that handles asynchronous AI generation and API endpoints. |
-| **Server** | Uvicorn | Runs the FastAPI application seamlessly to handle multiple concurrent hackathon queries. |
-| **Geospatial Processing** | Rasterio | Extracts deep metadata (CRS, bounds, bands) directly from uploaded GeoTIFFs to inject spatial context into the AI prompt. |
-| **Database** | SQLite & SQLAlchemy | Persistently stores user conversational history and analysis results locally. |
-| **Machine Learning Core** | PyTorch | The foundational tensor framework running the entire neural network and Vision-Language Model. |
-| **Model Architectures** | HuggingFace Transformers | Loads and runs the Qwen2.5-VL model architectures and the specialized multimodal tokenizers. |
-| **Base AI Model** | Qwen2.5-VL-3B | A powerful 3-Billion parameter Vision-Language Model that natively understands complex spatial prompts and imagery. |
-| **Fine-Tuning** | PEFT (LoRA) | Applies Low-Rank Adaptation to allow our model to specialize in ISRO satellite data without requiring massive VRAM. |
-| **Hardware Acceleration**| Accelerate & BitsAndBytes | Enables 4-bit quantization, allowing the massive AI model to run incredibly fast on standard consumer GPUs. |
+| Library | Version | How it is used in SatQuery AI |
+| --- | --- | --- |
+| FastAPI | 0.115+ | Serves all the REST API endpoints. Handles image uploads, query processing, authentication, and conversation history. |
+| Uvicorn | 0.34+ | Runs the FastAPI application as an ASGI server on port 4000. |
+| SQLAlchemy | 2.0+ | Manages the database schema and all queries for users, conversations, and analysis results stored in SQLite. |
+| PyJWT | 2.10+ | Creates and validates JSON Web Tokens used to authenticate users between the frontend and the backend. |
+| bcrypt | 4.2+ | Hashes user passwords before storing them so plain-text passwords are never saved to the database. |
+| python-multipart | 0.0.20+ | Parses the multipart form data when a user uploads a satellite image file through the browser. |
+| python-dotenv | 1.0+ | Loads environment variables from the .env file so secrets like the JWT key are not hardcoded in source files. |
+| pydantic | 2.11+ | Validates the shape and types of all incoming API request bodies and outgoing response objects. |
+| Rasterio | 1.3+ | Opens GeoTIFF files to extract geospatial metadata including CRS, lat/lon bounds, resolution, and band count. This context is injected directly into the AI prompt. |
+| PyTorch | 2.2+ | The core tensor computation framework that runs the entire neural network for the Vision Language Model inference. |
+| Transformers (HuggingFace) | 4.40+ | Loads the Qwen2.5-VL-3B-Instruct model architecture and the multimodal processor that tokenizes both text and image inputs together. |
+| PEFT | 0.10+ | Applies the trained LoRA adapter weights on top of the base Qwen2.5-VL model so the model specializes in satellite imagery without retraining all 3 billion parameters. |
+| BitsAndBytes | 0.43+ | Loads the model in 4-bit NF4 quantization so it fits and runs on consumer GPUs that do not have enough VRAM for full precision. |
+| Accelerate | 0.29+ | Handles device placement and memory management when loading the quantized model across available hardware. |
+| qwen-vl-utils | 0.0.14 | Provides the process_vision_info utility that correctly prepares image tensors for the Qwen2.5-VL model's visual encoder. |
+| NumPy | 2.4+ | Used inside the Rasterio pipeline to read band arrays and compute the NDVI index for vegetation analysis. |
+| email-validator | 2.2+ | Validates that email addresses provided during user registration are properly formatted before saving to the database. |
 
-## 🚀 Getting Started
+### Frontend Libraries
 
-### Prerequisites
-* Python 3.10+
-* Node.js 18+
-* CUDA-compatible GPU (Recommended for fast inference)
+| Library | Version | How it is used in SatQuery AI |
+| --- | --- | --- |
+| React | 18+ | Builds the entire user interface as reusable components including the chat window, image viewer, sidebar, and settings panel. |
+| Vite | 6.4+ | Bundles and serves the React application with hot module replacement during development and optimized output for production. |
+| Lucide React | Latest | Provides all the icons used throughout the interface such as the satellite icon, layer controls, zoom buttons, and action toolbar icons. |
+| Tailwind CSS | 3+ | Used for base utility classes in the layout. The application also maintains a custom CSS file for the dark geospatial theme. |
 
-### 1. Start the Backend Server
-`ash
+
+## Project Structure
+
+`
+Satquery-Final-Production/
+  backend/
+    ai_service/         AI inference service, bounding box parser, and lat/lon extractor
+    app/
+      routers/          API route handlers for auth, images, queries, and users
+      models/           SQLAlchemy database models
+      schemas/          Pydantic request and response schemas
+      services/         Business logic for analysis and file handling
+  frontend/
+    src/
+      components/       React components for chat, image viewer, settings, and results
+      services/         API client functions that call the backend
+      utils/            File format helpers and timestamp formatters
+  training/
+    scripts/            Model training, evaluation, and inference scripts
+    models/             Trained LoRA adapter weights stored here
+`
+
+
+## Getting Started
+
+You need Python 3.10 or higher and Node.js 18 or higher installed. A CUDA-compatible GPU is strongly recommended because the model is large and will be very slow on CPU.
+
+Clone the repository first.
+
+`
+git clone https://github.com/YOUR_USERNAME/YOUR_REPO.git
+cd Satquery-Final-Production
+`
+
+Start the backend.
+
+`
 cd backend
 python -m venv .venv
-source .venv/bin/activate  # Or .venv\Scripts\activate on Windows
+.venv\Scripts\activate
 pip install -r requirements.txt
 python -m uvicorn app.main:app --port 4000
 `
 
-### 2. Start the Frontend Server
-`ash
+Start the frontend in a new terminal.
+
+`
 cd frontend
 npm install
 npm run dev
 `
 
-### 3. Access the Application
-Open your browser and navigate to http://localhost:2000. You can log in using any dummy credentials, upload a satellite image, and start asking queries!
+Open http://localhost:2000 in your browser. Create an account, upload a satellite image, and start querying.
 
-## 🧠 Model Training & Architecture
 
-Our architecture utilizes a heavily fine-tuned Qwen2.5-VL model adapted using LoRA specifically for ISRO's remote sensing datasets. By injecting dynamic Rasterio headers into the context window, the model bridges the gap between raw pixel data (RGB/SAR) and geospatial reality (Coordinates, CRS).
+## Model
 
----
-*Built with ❤️ for ISRO and the SIH Hackathon.*
+The AI model is Qwen2.5-VL-3B-Instruct fine-tuned with LoRA on ISRO remote sensing datasets. The base model weights are downloaded from HuggingFace and the LoRA adapter is stored in training/models/satquery-best-lora. The adapter file is tracked with Git LFS because it is approximately 148 MB.
+
+When you run a query, the backend extracts geospatial context from the image using Rasterio, appends it to your query, runs inference through the fine-tuned model, parses the bounding box coordinates from the output, converts them to real-world latitude and longitude using the image CRS, and returns the structured result to the frontend.
+
+
+Built for ISRO and the SIH Hackathon.
