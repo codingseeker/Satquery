@@ -1,4 +1,4 @@
-# SatQuery AI
+﻿# SatQuery AI
 
 SatQuery AI is a multimodal AI platform built for ISRO's Smart India Hackathon 2024. It lets you upload satellite imagery and ask questions about it in plain English. The system analyzes the image using a fine-tuned Vision Language Model, draws bounding boxes around detected features, and shows the result in a side-by-side annotated viewer alongside a structured textual response.
 
@@ -114,7 +114,7 @@ Satquery-Final-Production/
   docker-compose.yml        Docker configuration for running backend and frontend together
 ```
 
-## Architecture Architecture Overview
+## Architecture Overview
 
 - **Frontend Client (React)**: Handles all user interaction, rendering the map and bounding boxes dynamically based on JSON responses.
 - **Backend API (FastAPI)**: Serves as the orchestration layer between the frontend and the AI model, handling auth and image parsing.
@@ -126,13 +126,13 @@ Satquery-Final-Production/
 The following are not committed because they are either too large, contain secrets, or are auto-generated.
 
 ```text
-- .venv/ and node_modules/ — install these locally using pip install and npm install
-- backend/.env — copy from backend/.env.example and fill in your values
-- backend/uploads/ and uploads/ — user-uploaded images, created automatically at runtime
-- backend/satquery.db — the SQLite database, created automatically on first startup
-- training/data/ — raw and processed training datasets, not included due to size
-- training/outputs/checkpoints/ — intermediate training checkpoints
-- training/models/qwen25vl/ — the 6GB base model, downloaded automatically from HuggingFace at runtime
+- .venv/ and node_modules/ â€” install these locally using pip install and npm install
+- backend/.env â€” copy from backend/.env.example and fill in your values
+- backend/uploads/ and uploads/ â€” user-uploaded images, created automatically at runtime
+- backend/satquery.db â€” the SQLite database, created automatically on first startup
+- training/data/ â€” raw and processed training datasets, not included due to size
+- training/outputs/checkpoints/ â€” intermediate training checkpoints
+- training/models/qwen25vl/ â€” the 6GB base model, downloaded automatically from HuggingFace at runtime
 ```
 
 ## Getting Started
@@ -174,3 +174,4 @@ The AI model is Qwen2.5-VL-3B-Instruct fine-tuned with LoRA on ISRO remote sensi
 When you run a query, the backend extracts geospatial context from the image using Rasterio, appends it to your query, runs inference through the fine-tuned model, parses bounding box coordinates from the output, converts them to real-world latitude and longitude using the image coordinate reference system, and returns the structured result to the frontend.
 
 Built for ISRO and the SIH Hackathon.
+
