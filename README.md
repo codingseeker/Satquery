@@ -152,7 +152,7 @@ Start the backend.
 ```bash
 cd backend
 python -m venv .venv
-.venv\Scriptsctivate
+.venv\Scriptsactivate
 pip install -r requirements.txt
 cp .env.example .env
 python -m uvicorn app.main:app --port 4000
