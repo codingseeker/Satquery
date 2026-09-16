@@ -174,3 +174,4 @@ When you run a query, the backend extracts geospatial context from the image usi
 
 Built for ISRO and the SIH Hackathon.
 
+
